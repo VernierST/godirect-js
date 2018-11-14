@@ -1,0 +1,15 @@
+# Check our guides at https://confluence.atlassian.com/x/14UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: node:carbon
+
+pipelines:
+  default:
+    - step:
+        caches:
+          # Caching node_modules is okay for now since we don't do any actual building here
+          - node
+        script:
+          - yarn install
+          - yarn lint

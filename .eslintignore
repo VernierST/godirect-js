@@ -1,0 +1,5 @@
+bower_components/*.js
+node_modules/*.js
+package.json
+rollup.config.js
+dist/*

@@ -1,0 +1,33 @@
+{
+  "name": "@vernier/godirect",
+  "version": "1.0.0",
+  "browser": "dist/godirect.min.js",
+  "devDependencies": {
+    "eslint": "^5.5.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "rollup": "^0.66.4",
+    "rollup-plugin-terser": "^3.0.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "bundle": "rollup -c"
+  },
+  "license": "GPL-3.0",
+  "description": "A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https://www.vernier.com/products/sensors/go-direct-sensors).",
+  "main": "dist/godirect.min.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/vernierst/godirect-js.git"
+  },
+  "keywords": [
+    "vernier",
+    "godirect",
+    "gdx",
+    "bluetooth",
+    "sensor",
+    "webbluetooth"
+  ],
+  "author": "Vernier Software & Technology",
+  "homepage": "https://bitbucket.org/vernierst/godirect-js#readme"
+}
