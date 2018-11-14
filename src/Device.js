@@ -476,7 +476,7 @@ export default class Device extends EventEmitter {
           minPeriod: response.getUint32(124, true) / 1000,
           maxPeriod: ((response.getUint32(132, true) << 32) + response.getUint32(128, true)) / 1000,
           typicalPeriod: response.getUint32(136, true) / 1000,
-          granularity: response.getUint32(140, true) /1000
+          granularity: response.getUint32(140, true) / 1000
         });
 
         const sensorSpecs = new SensorSpecs({
