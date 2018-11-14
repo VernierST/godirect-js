@@ -18,7 +18,7 @@
   "main": "dist/godirect.min.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/vernierst/godirect-js.git"
+    "url": "https://github.com/VernierST/godirect-js"
   },
   "keywords": [
     "vernier",
@@ -29,5 +29,5 @@
     "webbluetooth"
   ],
   "author": "Vernier Software & Technology",
-  "homepage": "https://bitbucket.org/vernierst/godirect-js#readme"
+  "homepage": "https://github.com/VernierST/godirect-js"
 }
