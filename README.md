@@ -66,7 +66,7 @@ enabledSensors.forEach(sensor => {
 });
 ```
 
-See this example and others (including our Python versions) at our gdxexamples repository: [https://bitbucket.org/vernierst/gdxexamples/src](https://bitbucket.org/vernierst/gdxexamples/src)
+See this example and others (including our Python versions) at our examples repository: [https://github.com/VernierST/godirect-examples](https://github.com/VernierST/godirect-examples)
 
 ## License
 
