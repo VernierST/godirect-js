@@ -66,7 +66,8 @@ enabledSensors.forEach(sensor => {
 });
 ```
 
-See this example and others (including our Python versions) at our examples repository: [https://github.com/VernierST/godirect-examples](https://github.com/VernierST/godirect-examples)
+See this example and others (including our Python versions) at our examples repository: [https://github.com/VernierST/godirect-examples](https://github.com/VernierST/godirect-examples) or visit the [live demo](https://vernierst.github.io/godirect-examples/js/godirect-sensor-readout/)
+
 
 ## License
 
