@@ -1,4 +1,5 @@
 import Device from './Device.js';
+import WebBluetoothDeviceAdapter from './WebBluetoothDeviceAdapter.js'
 
 const godirect = {
   /**
@@ -8,12 +9,19 @@ const godirect = {
   * @param {config} config
   * @returns {Promise} Promise object represents a Device instance
   */
-  async createDevice(bleDevice, config = { open: true }) {
-    const device = new Device(bleDevice);
+  async createDevice(bleDevice, { open = true, startMeasurements = true } = {}) {
+    let adapter = bleDevice;
 
-    if (config.open) {
+    // If not a go direct adapter, assume a web bluetooth device
+    if (!adapter.godirectAdapter) {
+      adapter = new WebBluetoothDeviceAdapter(bleDevice);
+    }
+
+    const device = new Device(adapter);
+
+    if (open) {
       try {
-        await device.open(true);
+        await device.open(startMeasurements);
       } catch (err) {
         console.error(err);
         throw err;
