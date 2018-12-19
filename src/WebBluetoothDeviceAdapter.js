@@ -1,3 +1,5 @@
+import { log } from './utils.js';
+
 const SERVICE = 'd91714ef-28b9-4f91-ba16-f0d9a604f112';
 const COMMAND_CHARACTERISTIC = 'f4bf14a6-c7d5-4b6d-8aa8-df1a7c83adcb';
 const RESPONSE_CHARACTERISTIC = 'b41e6675-a329-40e0-aa01-44d2f444babe';
@@ -6,8 +8,8 @@ export default class WebBluetoothDeviceAdapter {
   constructor(webBluetoothNativeDevice) {
     this.webBluetoothNativeDevice = webBluetoothNativeDevice;
 
-    this.deviceCommand;
-    this.deviceResponse;
+    this.deviceCommand = null;
+    this.deviceResponse = null;
   }
 
   get godirectAdapter () {
