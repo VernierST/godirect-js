@@ -63,7 +63,7 @@ export class Sensor extends EventEmitter {
   * @param {boolean} enabled
   */
   setEnabled(enabled) {
-    if (this.endabled !== enabled) {
+    if (this.enabled !== enabled) {
       this.enabled = enabled;
       this.emit('state-changed', this);
     }
