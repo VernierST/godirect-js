@@ -50,6 +50,7 @@ export class Sensor extends EventEmitter {
   * Set the latest value and tell people about it.
   * @name setValue
   * @param {number} value
+  * @param {boolean} keep
   */
   setValue(value, keep) {
     this.value = value; // latest
