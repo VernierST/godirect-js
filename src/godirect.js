@@ -1,5 +1,5 @@
 import Device from './Device.js';
-import WebBluetoothDeviceAdapter from './WebBluetoothDeviceAdapter.js'
+import WebBluetoothDeviceAdapter from './WebBluetoothDeviceAdapter.js';
 
 const godirect = {
   /**

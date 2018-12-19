@@ -148,7 +148,7 @@ export default class Device extends EventEmitter {
   async _connect() {
     return this.device.setup({
       onClosed: () => this._onClosed(),
-      onResponse: (data) => this._handleResponse(data)
+      onResponse: data => this._handleResponse(data)
     });
   }
 

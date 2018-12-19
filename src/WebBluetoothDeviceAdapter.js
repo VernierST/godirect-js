@@ -19,10 +19,10 @@ export default class WebBluetoothDeviceAdapter {
   }
 
   // Todo: bikeshed on name of this function
-  async setup({onClosed, onResponse}) {
-
+  async setup({ onClosed, onResponse }) {
     this.webBluetoothNativeDevice.addEventListener(
-      'gattserverdisconnected', onClosed);
+      'gattserverdisconnected', onClosed
+    );
 
     try {
       const server = await this.webBluetoothNativeDevice.gatt.connect();
@@ -51,7 +51,7 @@ export default class WebBluetoothDeviceAdapter {
       console.error(err);
     }
 
-    if (! (this.deviceCommand && this.deviceResponse)) {
+    if (!(this.deviceCommand && this.deviceResponse)) {
       throw new Error('Expected command and response characteristics not found.');
     }
   }
