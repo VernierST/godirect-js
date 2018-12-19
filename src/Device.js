@@ -17,14 +17,11 @@ import { Sensor, MeasurementInfo, SensorSpecs } from './Sensor.js';
 export default class Device extends EventEmitter {
   constructor(device) {
     super();
-    device.addEventListener('gattserverdisconnected', this._onClosed.bind(this));
 
     this.device = device;
     this.sensors = [];
     this.opened = false;
     this.rollingCounter = 0;
-    this.deviceCommand = undefined;
-    this.deviceResponse = undefined;
     this.collecting = false;
     this.measurementPeriod = 10; // milliseconds
     this.response = null;
@@ -60,18 +57,16 @@ export default class Device extends EventEmitter {
   async open(autoStart = false) {
     try {
       await this._connect();
-      if (this.deviceResponse && this.deviceCommand) {
-        await this._init();
-        await this._getStatus();
-        await this._getDeviceInfo();
-        await this._getDefaultSensorsMask();
-        await this._getAvailableSensors();
+      await this._init();
+      await this._getStatus();
+      await this._getDeviceInfo();
+      await this._getDefaultSensorsMask();
+      await this._getAvailableSensors();
 
-        this._onOpened();
+      this._onOpened();
 
-        if (autoStart) {
-          this.start();
-        }
+      if (autoStart) {
+        this.start();
       }
     } catch (err) {
       console.error(err);
@@ -151,40 +146,14 @@ export default class Device extends EventEmitter {
   }
 
   async _connect() {
-    try {
-      const server = await this.device.gatt.connect();
-      const service = await server.getPrimaryService('d91714ef-28b9-4f91-ba16-f0d9a604f112');
-      const characteristics = await service.getCharacteristics();
-
-      characteristics.forEach((characteristic) => {
-        switch (characteristic.uuid) {
-          case 'f4bf14a6-c7d5-4b6d-8aa8-df1a7c83adcb':
-            this.deviceCommand = characteristic;
-            break;
-          case 'b41e6675-a329-40e0-aa01-44d2f444babe':
-            this.deviceResponse = characteristic;
-            // Setup handler on the characteristic and start notifications.
-            this.deviceResponse.addEventListener('characteristicvaluechanged', (event) => {
-              const response = event.target.value;
-              this._handleResponse(response);
-            });
-            this.deviceResponse.startNotifications();
-            break;
-          default:
-            log(`No case found for ${characteristic.uuid}`);
-        }
-        return {
-          deviceCommand: this.deviceCommand,
-          deviceResponse: this.deviceResponse
-        };
-      });
-    } catch (err) {
-      console.error(err);
-    }
+    return this.device.setup({
+      onClosed: () => this._onClosed(),
+      onResponse: data => this._handleResponse(data)
+    });
   }
 
   async _disconnect() {
-    return this.device.gatt.disconnect();
+    return this.device.close();
   }
 
   _init() {
@@ -379,7 +348,7 @@ export default class Device extends EventEmitter {
           val = command.subarray(offset, offset + remaining);
           remaining = 0;
         }
-        await this.deviceCommand.writeValue(val); // eslint-disable-line no-await-in-loop
+        await this.device.writeCommand(val); // eslint-disable-line no-await-in-loop
       } catch (error) {
         log(`Write Failure: ${error}`);
       }
