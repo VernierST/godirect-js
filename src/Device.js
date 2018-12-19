@@ -30,6 +30,7 @@ export default class Device extends EventEmitter {
     this.response = null;
     this.remainingResponseLength = 0;
     this.defaultSensorsMask = 0;
+    this.keepValues = true; // keep all the values during a collection
   }
 
   /**
@@ -300,9 +301,9 @@ export default class Device extends EventEmitter {
     for (let count = 0; count < valueCount; ++count) {
       for (let ix = 0; ix < sensors.length; ++ix) {
         if (isFloat) {
-          sensors[ix].setValue(response.getFloat32(index, true));
+          sensors[ix].setValue(response.getFloat32(index, true), this.keepValues);
         } else {
-          sensors[ix].setValue(response.getInt32(index, true));
+          sensors[ix].setValue(response.getInt32(index, true), this.keepValues);
         }
         index += 4;
       }

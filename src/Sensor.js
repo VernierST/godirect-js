@@ -51,9 +51,11 @@ export class Sensor extends EventEmitter {
   * @name setValue
   * @param {number} value
   */
-  setValue(value) {
+  setValue(value, keep) {
     this.value = value; // latest
-    this.values.push(this.value);
+    if (keep) {
+      this.values.push(this.value);
+    }
     this.emit('value-changed', this);
   }
 
