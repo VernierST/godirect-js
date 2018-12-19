@@ -50,10 +50,13 @@ export class Sensor extends EventEmitter {
   * Set the latest value and tell people about it.
   * @name setValue
   * @param {number} value
+  * @param {boolean} keep
   */
-  setValue(value) {
+  setValue(value, keep) {
     this.value = value; // latest
-    this.values.push(this.value);
+    if (keep) {
+      this.values.push(this.value);
+    }
     this.emit('value-changed', this);
   }
 
@@ -63,7 +66,7 @@ export class Sensor extends EventEmitter {
   * @param {boolean} enabled
   */
   setEnabled(enabled) {
-    if (this.endabled !== enabled) {
+    if (this.enabled !== enabled) {
       this.enabled = enabled;
       this.emit('state-changed', this);
     }
