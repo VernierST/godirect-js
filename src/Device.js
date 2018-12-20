@@ -28,6 +28,7 @@ export default class Device extends EventEmitter {
     this.remainingResponseLength = 0;
     this.defaultSensorsMask = 0;
     this.keepValues = true; // keep all the values during a collection
+    this.minMeasurementPeriod = 10; // minimum period in milliseconds
   }
 
   /**
@@ -510,10 +511,10 @@ export default class Device extends EventEmitter {
 
   _setMeasurementPeriod(measurementPeriodInMicroseconds) {
     const command = new Uint8Array(commands.SET_MEASUREMENT_PERIOD);
+    const minMeasurementPeriodinMicroseconds = this.minMeasurementPeriod * 1000;
 
-    // Limit the period to no faster than 100 samples a second.
-    if (measurementPeriodInMicroseconds < 10000) {
-      measurementPeriodInMicroseconds = 10000;
+    if (measurementPeriodInMicroseconds < minMeasurementPeriodinMicroseconds) {
+      measurementPeriodInMicroseconds = minMeasurementPeriodinMicroseconds;
     }
 
     log(`MeasurementPeriod: ${measurementPeriodInMicroseconds}`);
