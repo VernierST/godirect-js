@@ -511,10 +511,10 @@ export default class Device extends EventEmitter {
 
   _setMeasurementPeriod(measurementPeriodInMicroseconds) {
     const command = new Uint8Array(commands.SET_MEASUREMENT_PERIOD);
-    const minMeasurementPeriodinMicroseconds = this.minMeasurementPeriod * 1000;
+    const minMeasurementPeriodInMicroseconds = this.minMeasurementPeriod * 1000;
 
-    if (measurementPeriodInMicroseconds < minMeasurementPeriodinMicroseconds) {
-      measurementPeriodInMicroseconds = minMeasurementPeriodinMicroseconds;
+    if (measurementPeriodInMicroseconds < minMeasurementPeriodInMicroseconds) {
+      measurementPeriodInMicroseconds = minMeasurementPeriodInMicroseconds;
     }
 
     log(`MeasurementPeriod: ${measurementPeriodInMicroseconds}`);
