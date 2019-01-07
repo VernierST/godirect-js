@@ -2,11 +2,13 @@
   "name": "@vernier/godirect",
   "version": "1.1.1",
   "browser": "dist/godirect.min.js",
+  "main": "dist/godirect.min.cjs.js",
+  "module": "src/godirect.js",
   "devDependencies": {
     "eslint": "^5.5.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
-    "rollup": "^0.66.4",
+    "rollup": "^0.66.6",
     "rollup-plugin-terser": "^3.0.0"
   },
   "scripts": {
@@ -15,7 +17,6 @@
   },
   "license": "GPL-3.0",
   "description": "A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https://www.vernier.com/products/sensors/go-direct-sensors).",
-  "main": "dist/godirect.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/VernierST/godirect-js"
