@@ -2,13 +2,16 @@
   "name": "@vernier/godirect",
   "version": "1.2.0",
   "browser": "dist/godirect.min.js",
-  "main": "dist/godirect.min.cjs.js",
+  "main": "dist/godirect.min.umd.js",
   "module": "src/godirect.js",
   "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
     "eslint": "^5.5.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "rollup": "^0.66.6",
+    "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-terser": "^3.0.0"
   },
   "scripts": {
