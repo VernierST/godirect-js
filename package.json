@@ -1,6 +1,6 @@
 {
   "name": "@vernier/godirect",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "browser": "dist/godirect.min.js",
   "main": "dist/godirect.min.cjs.js",
   "module": "src/godirect.js",
