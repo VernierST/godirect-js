@@ -32,8 +32,16 @@ export default [
     terserPlugin,
     babel({
       babelrc: false,
-      presets: ['@babel/env'],
-      exclude: 'node_modules/**'
+      presets: [
+        ["@babel/env", {
+	        "targets": {
+	          "node": "8.0.0"
+	        },
+          "modules": false,
+          "useBuiltIns": "usage"
+        }]
+      ],
+      exclude: 'node_modules/**',
     })
   ]
 }
