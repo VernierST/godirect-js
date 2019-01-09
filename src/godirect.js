@@ -51,8 +51,4 @@ const godirect = {
   }
 };
 
-if (!window.godirect) {
-  window.godirect = godirect;
-}
-
 export default godirect;
