@@ -33,8 +33,5 @@
     "webbluetooth"
   ],
   "author": "Vernier Software & Technology",
-  "homepage": "https://github.com/VernierST/godirect-js",
-  "dependencies": {
-    "core-js": "^2.6.1"
-  }
+  "homepage": "https://github.com/VernierST/godirect-js"
 }
