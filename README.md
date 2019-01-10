@@ -8,12 +8,10 @@ This library is currently only implemented using [WebBluetooth](https://webbluet
 
 ## Installation
 
-Use the prepackaged library in your HTML document:
+Use the prepackaged UDM version of library in your HTML document:
 ```html
-<script type="module" src="https://unpkg.com/@vernier/godirect/dist/godirect.min.js"></script>
+<script src="https://unpkg.com/@vernier/godirect/dist/godirect.min.umd.js"></script>
 ```
-
-*IMPORTANT* `type="module"` in the script tag must be included for the script to work correctly
 
 Use the library as a JavaScript module:
 
@@ -66,7 +64,7 @@ enabledSensors.forEach(sensor => {
 });
 ```
 
-See this example and others (including our Python versions) at our examples repository: [https://github.com/VernierST/godirect-examples](https://github.com/VernierST/godirect-examples) or visit the [live demo](https://vernierst.github.io/godirect-examples/js/godirect-sensor-readout/)
+See this example and others (including our Python versions) at our examples repository: [https://github.com/VernierST/godirect-examples](https://github.com/VernierST/godirect-examples) or visit the [live demo](https://vernierst.github.io/godirect-examples/javascript/godirect-sensor-readout/)
 
 
 ## License
