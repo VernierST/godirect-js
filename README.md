@@ -8,7 +8,7 @@ This library is currently only implemented using [WebBluetooth](https://webbluet
 
 ## Installation
 
-Use the prepackaged UDM version of library in your HTML document:
+Use the prepackaged UMD version of library in your HTML document:
 ```html
 <script src="https://unpkg.com/@vernier/godirect/dist/godirect.min.umd.js"></script>
 ```
