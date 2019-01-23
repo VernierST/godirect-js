@@ -38,7 +38,8 @@ export default [
 	          "node": "8.0.0"
 	        },
           "modules": false,
-          "useBuiltIns": "usage"
+          "useBuiltIns": "usage",
+          "forceAllTransforms": true
         }]
       ],
       exclude: 'node_modules/**',
