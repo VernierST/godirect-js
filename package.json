@@ -7,16 +7,21 @@
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
     "eslint": "^5.5.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^22.1.3",
+    "jest": "^23.6.0",
     "rollup": "^0.66.6",
     "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-terser": "^3.0.0"
   },
   "scripts": {
     "lint": "eslint .",
-    "bundle": "rollup -c"
+    "bundle": "rollup -c",
+    "test": "jest"
   },
   "license": "GPL-3.0",
   "description": "A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https://www.vernier.com/products/sensors/go-direct-sensors).",
@@ -33,5 +38,11 @@
     "webbluetooth"
   ],
   "author": "Vernier Software & Technology",
-  "homepage": "https://github.com/VernierST/godirect-js"
+  "homepage": "https://github.com/VernierST/godirect-js",
+  "babel": {
+    "presets": ["@babel/preset-env"]
+  },
+  "jest": {
+    "testEnvironment": "node"
+ }
 }
