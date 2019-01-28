@@ -1,5 +1,3 @@
-import { defaultPageSetup } from '../puppeteer/utils';
-
 const puppeteer = require('puppeteer');
 
 
@@ -10,7 +8,13 @@ describe('TextEncoder/Decoder', () => {
     });
     const page = await browser.newPage();
 
-    page.emulate(defaultPageSetup);
+    page.emulate({
+      viewport: {
+        width: 500,
+        height: 500
+      },
+      userAgent: ''
+    });
 
     const result = await page.evaluate(() => {
       const uint8array = new TextEncoder().encode('hello world!');
