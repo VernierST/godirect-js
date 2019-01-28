@@ -10,7 +10,7 @@ describe('godirect API', () => {
   });
 });
 
-describe('createDevice ', () => {
+describe('createDevice', () => {
   const testBleDeviceAdapter = {
     godirectAdapter: true,
     async setup() { return true; },
