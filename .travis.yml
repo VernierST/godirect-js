@@ -3,5 +3,6 @@ node_js:
   - stable
 script:
   - yarn install
+  - yarn bundle
   - yarn lint
   - yarn test
