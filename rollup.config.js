@@ -48,13 +48,13 @@ export default [
     babel({
       babelrc: false,
       presets: [
-        ["@babel/env", {
-	        "targets": {
-	          "node": "8.0.0"
+        ['@babel/env', {
+	        targets: {
+	          node: '8.0.0'
 	        },
-          "modules": false,
-          "useBuiltIns": "usage",
-          "forceAllTransforms": true
+          modules: false,
+          useBuiltIns: 'usage',
+          forceAllTransforms: true
         }]
       ],
       exclude: 'node_modules/**',
