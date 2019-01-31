@@ -33,21 +33,25 @@ export default [
   plugins: [
     terserPlugin,
     nodeResolve({
-      browser: true
+      browser: true,
+      main: true,
     }),
     babel({
       babelrc: false,
+      exclude: 'node_modules/**',
       presets: [
-        ["@babel/env", {
-	        "targets": {
-	          "node": "8.0.0"
+        ['@babel/env', {
+	        'targets': {
+            'node': "8.0.0"
 	        },
-          "modules": false,
-          "useBuiltIns": "usage",
-          "forceAllTransforms": true
+          'modules': false,
+          'useBuiltIns': 'usage',
+          'forceAllTransforms': true
         }]
       ],
-      exclude: 'node_modules/**',
+      plugins: [
+        ['@babel/plugin-transform-regenerator']
+      ]
     })
   ]
 }
