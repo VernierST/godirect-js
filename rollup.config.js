@@ -1,17 +1,26 @@
 import { terser } from 'rollup-plugin-terser';
 import babel from 'rollup-plugin-babel';
 import nodeResolve from 'rollup-plugin-node-resolve';
+import license from 'rollup-plugin-license';
 
 
 const terserPlugin = terser({
-  output: function(node, comment) {
-    const { type } = comment;
-    if (type === 'comment2') {
-      // multiline comment
-      return /@preserve|@license/;
+  output: {
+    comments(node, comment) {
+      const text = comment.value;
+      const type = comment.type;
+      if (type == "comment2") {
+        // multiline comment
+        return /@preserve|@license|@cc_on/i.test(text);
+      }
     }
-    return undefined;
   }
+});
+
+const licensePlugin = license({
+  banner: `Copyright (c) ${(new Date().getFullYear())} Vernier Software. All rights reserved.
+    This code may only be used under the GPL-3 license found at
+    https://raw.githubusercontent.com/VernierST/godirect-js/master/LICENSE`,
 });
 
 export default [
@@ -21,7 +30,7 @@ export default [
     file: './dist/godirect.min.js',
     format: 'esm'
   },
-  plugins: [terserPlugin]
+  plugins: [terserPlugin, licensePlugin]
 },
 {
   input: './src/godirect.js',
@@ -32,26 +41,23 @@ export default [
   },
   plugins: [
     terserPlugin,
+    licensePlugin,
     nodeResolve({
-      browser: true,
-      main: true,
+      browser: true
     }),
     babel({
       babelrc: false,
-      exclude: 'node_modules/**',
       presets: [
-        ['@babel/env', {
-	        'targets': {
-            'node': "8.0.0"
+        ["@babel/env", {
+	        "targets": {
+	          "node": "8.0.0"
 	        },
-          'modules': false,
-          'useBuiltIns': 'usage',
-          'forceAllTransforms': true
+          "modules": false,
+          "useBuiltIns": "usage",
+          "forceAllTransforms": true
         }]
       ],
-      plugins: [
-        ['@babel/plugin-transform-regenerator']
-      ]
+      exclude: 'node_modules/**',
     })
   ]
 }
