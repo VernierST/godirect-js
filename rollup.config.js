@@ -9,7 +9,7 @@ const terserPlugin = terser({
     comments(node, comment) {
       const text = comment.value;
       const type = comment.type;
-      if (type == "comment2") {
+      if (type == 'comment2') {
         // multiline comment
         return /@preserve|@license|@cc_on/i.test(text);
       }
