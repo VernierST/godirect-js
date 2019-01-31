@@ -6,8 +6,8 @@
   "module": "src/godirect.js",
   "devDependencies": {
     "@babel/core": "^7.2.2",
-    "@babel/polyfill": "^7.2.5",
     "@babel/plugin-transform-regenerator": "^7.0.0",
+    "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.2.3",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
@@ -19,6 +19,7 @@
     "puppeteer": "^1.11.0",
     "rollup": "^0.66.6",
     "rollup-plugin-babel": "^4.2.0",
+    "rollup-plugin-license": "^0.8.1",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-terser": "^3.0.0",
     "uglify-js": "^3.4.9"
@@ -53,6 +54,6 @@
     "testEnvironment": "node",
     "setupFiles": [
       "<rootDir>/jest.init.js"
-     ]
+    ]
   }
 }
