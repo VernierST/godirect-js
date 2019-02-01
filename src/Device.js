@@ -29,6 +29,10 @@ export default class Device extends EventEmitter {
     this.defaultSensorsMask = 0;
     this.keepValues = true; // keep all the values during a collection
     this.minMeasurementPeriod = 10; // minimum period in milliseconds
+
+    this.serialNumber = '';
+    this.orderCode = '';
+    this.name = '';
   }
 
   /**
@@ -414,13 +418,22 @@ export default class Device extends EventEmitter {
 
   _getDeviceInfo() {
     return this._sendCommand(commands.GET_INFO).then((response) => {
+      // Used to filter out 0's, since they don't belong in strings
+      const nonZero = x => (x !== (undefined || null || '' || 0));
       const enc = new TextDecoder('utf-8');
-      let text = new Uint8Array(response.buffer, 6, 16);
-      this.orderCode = enc.decode(text);
-      text = new Uint8Array(response.buffer, 22, 16);
-      this.serialNumber = enc.decode(text);
-      text = new Uint8Array(response.buffer, 38, 32);
-      this.name = enc.decode(text);
+
+      // OrderCode offset = 6 (header+cmd+counter)
+      // Ordercode length = 16
+      this.orderCode = enc.decode(new Uint8Array(response.buffer, 6, 16).filter(nonZero));
+
+      // SerialNumber offset = 22 (OrderCode offset + Ordercode length)
+      // SerialNumber length = 16
+      this.serialNumber = enc.decode(new Uint8Array(response.buffer, 22, 16).filter(nonZero));
+
+      // DeviceName offset = 38 (SerialNumber offset + SerialNumber length)
+      // DeviceName length = 32
+      this.name = enc.decode(new Uint8Array(response.buffer, 38, 32).filter(nonZero));
+
       log(`Device Info:`);
       dir(this);
     });
@@ -436,6 +449,8 @@ export default class Device extends EventEmitter {
       // until I can get with Kevin to figure out what is going on.
       const sensorId = response.getUint32(2, true);
       if (sensorId > 0) {
+        // Used to filter out 0's, since they don't belong in strings
+        const nonZero = x => (x !== (undefined || null || '' || 0));
         const enc = new TextDecoder('utf-8');
 
         const measurementInfo = new MeasurementInfo({
@@ -452,8 +467,12 @@ export default class Device extends EventEmitter {
 
         const sensorSpecs = new SensorSpecs({
           number: response.getUint8(0),
-          name: enc.decode(new Uint8Array(response.buffer, 13, 60)),
-          unit: enc.decode(new Uint8Array(response.buffer, 73, 32)),
+          // sensorDescription offset = 14 (6 bytes (header+cmd+counter) + 8 bytes (other fields))
+          // sensorDescription length = 60
+          name: enc.decode(new Uint8Array(response.buffer, 14, 60).filter(nonZero)),
+          // sensorUnit offset = 74 (sensorDescription offset + sensorDescription length)
+          // sensorUnit length = 32
+          unit: enc.decode(new Uint8Array(response.buffer, 74, 32).filter(nonZero)),
           mutalExclusiveMask: response.getUint32(144, true),
           measurementInfo,
           sensorId
