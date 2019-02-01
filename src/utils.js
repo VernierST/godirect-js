@@ -4,6 +4,8 @@ const isFunction = (obj) => {
   return typeof obj === 'function' || false;
 };
 
+export const nonZero = x => (x !== (undefined || null || '' || 0));
+
 export class EventEmitter {
   constructor() {
     this._listenerMap = new Map();
