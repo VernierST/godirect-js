@@ -27,7 +27,7 @@
   "scripts": {
     "lint": "eslint .",
     "bundle": "rollup -c",
-    "test": "jest"
+    "test": "npm run lint && jest"
   },
   "license": "GPL-3.0",
   "description": "A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https://www.vernier.com/products/sensors/go-direct-sensors).",
