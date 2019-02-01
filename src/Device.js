@@ -451,8 +451,8 @@ export default class Device extends EventEmitter {
         const decoder = new TextDecoder('utf-8');
 
         const measurementInfo = new MeasurementInfo({
-          type: response.getUint8(1),
-          mode: response.getUint8(2),
+          type: response.getUint8(6), // 0 = Real64 or 1 = Int32
+          mode: response.getUint8(7), // 0 = Periodic, 1 = Aperiodic
           minValue: response.getFloat64(108, true),
           maxValue: response.getFloat64(116, true),
           uncertainty: response.getFloat64(100, true),
