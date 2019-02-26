@@ -29,6 +29,9 @@
     "bundle": "rollup -c",
     "test": "npm run lint && jest"
   },
+  "dependencies": {
+    "text-encoding": "0.6.4"
+  },
   "license": "GPL-3.0",
   "description": "A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https://www.vernier.com/products/sensors/go-direct-sensors).",
   "repository": {
