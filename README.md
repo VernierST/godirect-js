@@ -8,7 +8,7 @@ This library is currently only implemented using [WebBluetooth](https://webbluet
 
 ## Installation
 
-Use the prepackaged UMD version of library in your HTML document:
+Use the unpkg module version of library in your HTML document:
 ```html
 <script src="https://unpkg.com/@vernier/godirect/dist/godirect.min.umd.js"></script>
 ```
@@ -23,7 +23,7 @@ $ npm i @vernier/godirect
 
 2. Import the module into your JavaScript file:
 ```javascript
-import godirect from './node_modules/@vernier/godirect/dist/godirect.min.js';
+import godirect from './node_modules/@vernier/godirect/dist/godirect.min.esm.js';
 ```
 
 ## Example Usage

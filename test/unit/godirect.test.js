@@ -1,4 +1,4 @@
-import godirect from '../src/godirect.js';
+import godirect from '../../src/godirect.js';
 
 describe('godirect API', () => {
   it('createDevice is defined', async () => {

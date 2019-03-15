@@ -15,9 +15,17 @@ import {
 
 import { Sensor, MeasurementInfo, SensorSpecs } from './Sensor.js';
 
+let _TextDecoder;
+
 export default class Device extends EventEmitter {
   constructor(device) {
     super();
+    if (typeof TextDecoder === 'undefined') {
+      const encoding = require('text-encoding');
+      _TextDecoder = encoding.TextDecoder;
+    } else {
+      _TextDecoder = TextDecoder;
+    }
 
     this.device = device;
     this.sensors = [];
@@ -419,7 +427,7 @@ export default class Device extends EventEmitter {
 
   _getDeviceInfo() {
     return this._sendCommand(commands.GET_INFO).then((response) => {
-      const decoder = new TextDecoder('utf-8');
+      const decoder = new _TextDecoder('utf-8');
 
       // OrderCode offset = 6 (header+cmd+counter)
       // Ordercode length = 16
@@ -448,7 +456,7 @@ export default class Device extends EventEmitter {
       // until I can get with Kevin to figure out what is going on.
       const sensorId = response.getUint32(2, true);
       if (sensorId > 0) {
-        const decoder = new TextDecoder('utf-8');
+        const decoder = new _TextDecoder('utf-8');
 
         const measurementInfo = new MeasurementInfo({
           type: response.getUint8(6), // 0 = Real64 or 1 = Int32
