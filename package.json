@@ -1,6 +1,6 @@
 {
   "name": "@vernier/godirect",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "unpkg": "dist/godirect.min.umd.js",
   "browser": "dist/godirect.min.esm.js",
   "main": "dist/godirect.min.cjs.js",
