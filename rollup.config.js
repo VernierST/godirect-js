@@ -3,7 +3,6 @@ import babel from 'rollup-plugin-babel';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import license from 'rollup-plugin-license';
 
-
 const terserPlugin = terser({
   output: {
     comments(node, comment) {
@@ -27,24 +26,23 @@ export default [
 {
   input: './src/godirect.js',
   output: {
-    file: './dist/godirect.min.js',
+    file: './dist/godirect.min.esm.js',
     format: 'esm'
   },
-  plugins: [terserPlugin, licensePlugin]
+  plugins: [
+    terserPlugin,
+    licensePlugin
+  ]
 },
 {
   input: './src/godirect.js',
   output: {
-    file: './dist/godirect.min.umd.js',
-    format: 'umd',
+    file: './dist/godirect.min.cjs.js',
+    format: 'cjs',
     name: 'godirect'
   },
   plugins: [
-    terserPlugin,
     licensePlugin,
-    nodeResolve({
-      browser: true
-    }),
     babel({
       babelrc: false,
       presets: [
@@ -57,8 +55,38 @@ export default [
           forceAllTransforms: true
         }]
       ],
-      exclude: 'node_modules/**',
-    })
+      exclude: 'node_modules/**'
+    }),
+    nodeResolve(),
+    terserPlugin,
+    licensePlugin
+  ]
+},
+{
+  input: './src/godirect.js',
+  output: {
+    file: './dist/godirect.min.umd.js',
+    format: 'umd',
+    name: 'godirect'
+  },
+  plugins: [
+    babel({
+      babelrc: false,
+      presets: [
+        ['@babel/env', {
+	        targets: {
+	          node: '8.0.0'
+	        },
+          modules: false,
+          useBuiltIns: 'usage',
+          forceAllTransforms: true
+        }]
+      ],
+      exclude: 'node_modules/**'
+    }),
+    nodeResolve(),
+    terserPlugin,
+    licensePlugin,
   ]
 }
 ];
