@@ -478,7 +478,7 @@ export default class Device extends EventEmitter {
           // sensorUnit offset = 74 (sensorDescription offset + sensorDescription length)
           // sensorUnit length = 32
           unit: decoder.decode(new Uint8Array(response.buffer, 74, 32).filter(nonZero)),
-          mutalExclusiveMask: response.getUint32(144, true),
+          mutalExclusionMask: response.getUint32(144, true),
           measurementInfo,
           sensorId
         });
@@ -499,7 +499,7 @@ export default class Device extends EventEmitter {
               if (sensor.number !== sensor2.number) {
                 if (sensor2.enabled) {
                   const mask = 1 << sensor2.number;
-                  if ((mask & sensor.specs.mutalExclusiveMask) === mask) {
+                  if ((mask & sensor.specs.mutalExclusionMask) === mask) {
                     sensor2.enabled = false;
                   } else if (sensor2.specs.measurementInfo.typicalPeriod > this.measurementPeriod) {
                     this.measurementPeriod = sensor2.specs.measurementInfo.typicalPeriod;
