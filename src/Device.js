@@ -161,6 +161,19 @@ export default class Device extends EventEmitter {
   }
 
   async _connect() {
+    // Setup on interval to write out to the device. This will enforce that
+    // we won't try to send a new command before getting the response from 
+    // the current command.
+    this.deviceWriteInterval = setInterval(() => {
+      if (this.writeQueue && this.writeQueue.length > 0) {
+        let q = this.writeQueue[0];
+        if (!q.written) {
+          this._writeCommand(q.fullCommand, q.offset, q.remaining);
+          q.written = true;
+        }
+      }
+    }, 10);
+
     return this.device.setup({
       onClosed: () => this._onClosed(),
       onResponse: data => this._handleResponse(data)
@@ -168,6 +181,9 @@ export default class Device extends EventEmitter {
   }
 
   async _disconnect() {
+    // Clear out the interval because we only need it when connected.
+    clearInterval(this.deviceWriteInterval);
+
     return this.device.close();
   }
 
@@ -376,16 +392,18 @@ export default class Device extends EventEmitter {
       this.writeQueue.push({
         command: command[4],
         rollingCounter: command[2],
+        fullCommand: command,
+        offset: offset,
+        remaining: remaining,
+        written: false,
         resolve,
         reject
       });
       setTimeout(() => {
         this.writeQueue = this.writeQueue.filter(q => q.command === command[4] && q.rollingCounter !== command[2]);
         reject(new Error(`write command timed out after 5s. Command: ${command[4].toString(16)} Rolling Counter: ${command[2].toString(16)}`));
-      }, 10000);
+      }, 5000);
     });
-
-    this._writeCommand(command, offset, remaining);
 
     return promise;
   }
