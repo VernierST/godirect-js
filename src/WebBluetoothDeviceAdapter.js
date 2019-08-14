@@ -54,7 +54,7 @@ export default class WebBluetoothDeviceAdapter {
     }
 
     if (!(this.deviceCommand && this.deviceResponse)) {
-      throw new Error('Expected command and response characteristics not found.');
+      throw new Error('Expected command and response characteristics not found');
     }
   }
 
