@@ -70,21 +70,17 @@ export default class Device extends EventEmitter {
   * @param {boolean} autoStart if set to true the device enables default sensors and starts measurements.
   */
   async open(autoStart = false) {
-    try {
-      await this._connect();
-      await this._init();
-      await this._getStatus();
-      await this._getDeviceInfo();
-      await this._getDefaultSensorsMask();
-      await this._getAvailableSensors();
+    await this._connect();
+    await this._init();
+    await this._getStatus();
+    await this._getDeviceInfo();
+    await this._getDefaultSensorsMask();
+    await this._getAvailableSensors();
 
-      this._onOpened();
+    this._onOpened();
 
-      if (autoStart) {
-        this.start();
-      }
-    } catch (err) {
-      console.error(err);
+    if (autoStart) {
+      this.start();
     }
   }
 
@@ -161,22 +157,23 @@ export default class Device extends EventEmitter {
   }
 
   async _connect() {
-    // Setup on interval to write out to the device. This will enforce that
-    // we won't try to send a new command before getting the response from
-    // the current command.
-    this.deviceWriteInterval = setInterval(() => {
-      if (this.writeQueue && this.writeQueue.length > 0) {
-        const q = this.writeQueue[0];
-        if (!q.written) {
-          this._writeToDevice(q.buffer);
-          q.written = true;
-        }
-      }
-    }, 10);
-
     return this.device.setup({
       onClosed: () => this._onClosed(),
       onResponse: data => this._handleResponse(data)
+    }).then(() => {
+      this.writeQueue = [];
+
+      // Enforce that only one command is set to the device at once
+      // and nothing else is sent until the response or timeout happens.
+      this.deviceWriteInterval = setInterval(() => {
+        if (this.writeQueue && this.writeQueue.length > 0) {
+          const q = this.writeQueue[0];
+          if (!q.written) {
+            this._writeToDevice(q.buffer);
+            q.written = true;
+          }
+        }
+      }, 10);
     });
   }
 
@@ -190,7 +187,6 @@ export default class Device extends EventEmitter {
   _init() {
     this.collecting = false;
     this.rollingCounter = 0xFF;
-    this.writeQueue = [];
 
     return this._sendCommand(commands.INIT);
   }
