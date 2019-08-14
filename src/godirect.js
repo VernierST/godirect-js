@@ -24,7 +24,7 @@ const godirect = {
         await device.open(startMeasurements);
       } catch (err) {
         console.error(err);
-        throw err;
+        throw new Error(`Device Open Failed [${err}]`);
       }
     }
 
