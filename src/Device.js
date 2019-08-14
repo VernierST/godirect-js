@@ -162,13 +162,13 @@ export default class Device extends EventEmitter {
 
   async _connect() {
     // Setup on interval to write out to the device. This will enforce that
-    // we won't try to send a new command before getting the response from 
+    // we won't try to send a new command before getting the response from
     // the current command.
     this.deviceWriteInterval = setInterval(() => {
       if (this.writeQueue && this.writeQueue.length > 0) {
-        let q = this.writeQueue[0];
+        const q = this.writeQueue[0];
         if (!q.written) {
-          this._writeCommand(q.fullCommand, q.offset, q.remaining);
+          this._writeToDevice(q.buffer);
           q.written = true;
         }
       }
@@ -367,34 +367,35 @@ export default class Device extends EventEmitter {
   }
 
   // commands
-  async _writeCommand(command, offset, remaining) {
-    let val;
+  async _writeToDevice(buffer) {
+    let chunk;
+    let offset = 0;
+    let remaining = buffer.length;
+    // We can only write 20 bytes at a time so break up the buffer and send it across.
     while (remaining > 0) {
       try {
         if (remaining > 20) {
-          val = command.subarray(offset, offset + 20);
+          chunk = buffer.subarray(offset, offset + 20);
           remaining -= 20;
           offset += 20;
         } else {
-          val = command.subarray(offset, offset + remaining);
+          chunk = buffer.subarray(offset, offset + remaining);
           remaining = 0;
         }
-        await this.device.writeCommand(val); // eslint-disable-line no-await-in-loop
+        await this.device.writeCommand(chunk); // eslint-disable-line no-await-in-loop
       } catch (error) {
         log(`Write Failure: ${error}`);
       }
     }
   }
 
-  _queueWriteCommand(command, offset, remaining) {
+  _queueWriteCommand(command) {
     log(`command queued: ${bufferToHex(command)}`);
     const promise = new Promise((resolve, reject) => {
       this.writeQueue.push({
         command: command[4],
         rollingCounter: command[2],
-        fullCommand: command,
-        offset: offset,
-        remaining: remaining,
+        buffer: command,
         written: false,
         resolve,
         reject
