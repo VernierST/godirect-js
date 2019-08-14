@@ -363,7 +363,7 @@ export default class Device extends EventEmitter {
     command[2] = this._decRollingCounter();
     command[3] = this._calculateChecksum(command);
 
-    return this._queueWriteCommand(command, 0, command.length);
+    return this._queueWriteCommand(command);
   }
 
   // commands
