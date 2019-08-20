@@ -173,7 +173,7 @@ export default class Device extends EventEmitter {
             q.written = true;
           }
         }
-      }, 100);
+      }, 10);
     });
   }
 
