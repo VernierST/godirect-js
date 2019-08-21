@@ -70,21 +70,17 @@ export default class Device extends EventEmitter {
   * @param {boolean} autoStart if set to true the device enables default sensors and starts measurements.
   */
   async open(autoStart = false) {
-    try {
-      await this._connect();
-      await this._init();
-      await this._getStatus();
-      await this._getDeviceInfo();
-      await this._getDefaultSensorsMask();
-      await this._getAvailableSensors();
+    await this._connect();
+    await this._init();
+    await this._getStatus();
+    await this._getDeviceInfo();
+    await this._getDefaultSensorsMask();
+    await this._getAvailableSensors();
 
-      this._onOpened();
+    this._onOpened();
 
-      if (autoStart) {
-        this.start();
-      }
-    } catch (err) {
-      console.error(err);
+    if (autoStart) {
+      this.start();
     }
   }
 
@@ -164,17 +160,33 @@ export default class Device extends EventEmitter {
     return this.device.setup({
       onClosed: () => this._onClosed(),
       onResponse: data => this._handleResponse(data)
+    }).then(() => {
+      this.writeQueue = [];
+
+      // Enforce that only one command is set to the device at once
+      // and nothing else is sent until the response or timeout happens.
+      this.deviceWriteInterval = setInterval(() => {
+        if (this.writeQueue && this.writeQueue.length > 0) {
+          const q = this.writeQueue[0];
+          if (!q.written) {
+            this._writeToDevice(q.buffer);
+            q.written = true;
+          }
+        }
+      }, 10);
     });
   }
 
   async _disconnect() {
+    // Clear out the interval because we only need it when connected.
+    clearInterval(this.deviceWriteInterval);
+
     return this.device.close();
   }
 
   _init() {
     this.collecting = false;
     this.rollingCounter = 0xFF;
-    this.writeQueue = [];
 
     return this._sendCommand(commands.INIT);
   }
@@ -347,45 +359,48 @@ export default class Device extends EventEmitter {
     command[2] = this._decRollingCounter();
     command[3] = this._calculateChecksum(command);
 
-    return this._queueWriteCommand(command, 0, command.length);
+    return this._queueWriteCommand(command);
   }
 
   // commands
-  async _writeCommand(command, offset, remaining) {
-    let val;
+  async _writeToDevice(buffer) {
+    let chunk;
+    let offset = 0;
+    let remaining = buffer.length;
+    // We can only write 20 bytes at a time so break up the buffer and send it across.
     while (remaining > 0) {
       try {
         if (remaining > 20) {
-          val = command.subarray(offset, offset + 20);
+          chunk = buffer.subarray(offset, offset + 20);
           remaining -= 20;
           offset += 20;
         } else {
-          val = command.subarray(offset, offset + remaining);
+          chunk = buffer.subarray(offset, offset + remaining);
           remaining = 0;
         }
-        await this.device.writeCommand(val); // eslint-disable-line no-await-in-loop
+        await this.device.writeCommand(chunk); // eslint-disable-line no-await-in-loop
       } catch (error) {
         log(`Write Failure: ${error}`);
       }
     }
   }
 
-  _queueWriteCommand(command, offset, remaining) {
+  _queueWriteCommand(command) {
     log(`command queued: ${bufferToHex(command)}`);
     const promise = new Promise((resolve, reject) => {
       this.writeQueue.push({
         command: command[4],
         rollingCounter: command[2],
+        buffer: command,
+        written: false,
         resolve,
         reject
       });
       setTimeout(() => {
         this.writeQueue = this.writeQueue.filter(q => q.command === command[4] && q.rollingCounter !== command[2]);
         reject(new Error(`write command timed out after 5s. Command: ${command[4].toString(16)} Rolling Counter: ${command[2].toString(16)}`));
-      }, 10000);
+      }, 5000);
     });
-
-    this._writeCommand(command, offset, remaining);
 
     return promise;
   }

@@ -4,7 +4,7 @@ A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https
 
 ## Requirements
 
-This library is currently only implemented using [WebBluetooth](https://webbluetoothcg.github.io/web-bluetooth/) which has limited browser support of Chrome only.
+This library is currently only implemented using [WebBluetooth](https://webbluetoothcg.github.io/web-bluetooth/) which has limited browser support.
 
 ## Installation
 
@@ -64,11 +64,11 @@ enabledSensors.forEach(sensor => {
 });
 ```
 
-See this example and others (including our Python versions) at our examples repository: [https://github.com/VernierST/godirect-examples](https://github.com/VernierST/godirect-examples) or visit the [live demo](https://vernierst.github.io/godirect-examples/javascript/godirect-sensor-readout/)
+See this example and others (including our Python versions) at our examples repository: [https://github.com/VernierST/godirect-examples](https://github.com/VernierST/godirect-examples) or visit the [live demos](https://vernierst.github.io/godirect-examples/javascript/)
 
 
 ## License
 
-GNU General Public License v3 (GPLv3)
+BSD 3-Clause License.
 
 Vernier products are designed for educational use. Our products are not designed nor are they recommended for any industrial, medical, or commercial process such as life support, patient diagnosis, control of a manufacturing process, or industrial testing of any kind.
