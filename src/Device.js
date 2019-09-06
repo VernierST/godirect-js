@@ -70,6 +70,9 @@ export default class Device extends EventEmitter {
   * @param {boolean} autoStart if set to true the device enables default sensors and starts measurements.
   */
   async open(autoStart = false) {
+    if (this.opened) {
+      throw new Error(`Device cannot be opened because it is already open`);
+    }
     await this._connect();
     await this._init();
     await this._getStatus();
@@ -89,6 +92,9 @@ export default class Device extends EventEmitter {
   * @name close
   */
   async close() {
+    if (!this.opened) {
+      throw new Error(`Device cannot be closed because it is not open`);
+    }
     await this._stopMeasurements();
     await this._sendCommand(commands.DISCONNECT);
     return this._disconnect();
