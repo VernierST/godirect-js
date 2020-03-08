@@ -1,4 +1,8 @@
-# GODIRECT JS - Vernier Go Direct® Sensor Library [![Build Status](https://travis-ci.org/VernierST/godirect-js.svg?branch=master)](https://travis-ci.org/VernierST/godirect-js) [![Dependabot](https://flat.badgen.net/dependabot/vernierst/godirect-js/?icon=dependabot)]
+# GODIRECT JS - Vernier Go Direct® Sensor Library 
+
+[![Build Status](https://travis-ci.org/VernierST/godirect-js.svg?branch=master)](https://travis-ci.org/VernierST/godirect-js) 
+
+[![Dependabot](https://flat.badgen.net/dependabot/vernierst/godirect-js/?icon=dependabot)](https://flat.badgen.net/dependabot/vernierst/godirect-js/?icon=dependabot)
 
 A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https://www.vernier.com/products/sensors/go-direct-sensors).
 
