@@ -11,6 +11,7 @@ module.exports = {
       "node": true
     },
     "rules": {
+      "arrow-parens": "off",
       "linebreak-style": "off",
       "no-prototype-builtins": "off",
       "global-require": "off",
@@ -18,6 +19,7 @@ module.exports = {
       "import/prefer-default-export": "off",
       "import/no-unresolved": "off",
       "import/extensions": "off",
+      "max-classes-per-file": "off",
       "max-len": "off",
       "quotes": ["error", "single", { "allowTemplateLiterals": true }],
       "no-plusplus": "off",
