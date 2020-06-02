@@ -1,5 +1,6 @@
 import Device from './Device.js';
 import WebBluetoothDeviceAdapter from './WebBluetoothDeviceAdapter.js';
+import WebUsbDeviceAdapter from './WebUsbDeviceAdapter.js';
 
 const godirect = {
   /**
@@ -9,12 +10,12 @@ const godirect = {
   * @param {config} config
   * @returns {Promise} Promise object represents a Device instance
   */
-  async createDevice(bleDevice, { open = true, startMeasurements = true } = {}) {
-    let adapter = bleDevice;
+  async createDevice(baseDevice, { open = true, startMeasurements = true, bluetooth = true } = {}) {
+    let adapter = baseDevice;
 
     // If not a go direct adapter, assume a web bluetooth device
     if (!adapter.godirectAdapter) {
-      adapter = new WebBluetoothDeviceAdapter(bleDevice);
+      adapter = bluetooth ? new WebBluetoothDeviceAdapter(baseDevice) : new WebUsbDeviceAdapter(baseDevice);
     }
 
     const device = new Device(adapter);
@@ -35,20 +36,40 @@ const godirect = {
   * This invokes the navigator.bluetooth.requestDevice method and returns the selected device as a Device instance.
   * This can only be invoked via a user interaction (e.g. within a click event) otherwise you'll get a security warning.
   * @name selectDevice
+  * @param {bool} bluetooth
   * @returns {Promise} Promise object represents a Device instance
   */
-  async selectDevice() {
-    if (!navigator.bluetooth) {
-      return Promise.reject(new Error('No Web Bluetooth support.'));
+  async selectDevice(bluetooth = true) {
+    let device;
+
+    if (bluetooth) {
+      if (!navigator.bluetooth) {
+        return Promise.reject(new Error('No Web Bluetooth support.'));
+      }
+
+      device = await navigator.bluetooth.requestDevice({
+        filters: [{ namePrefix: 'GDX' }],
+        optionalServices: ['d91714ef-28b9-4f91-ba16-f0d9a604f112']
+      });
+    } else {
+      if (!navigator.hid) {
+        return Promise.reject(new Error('No Web HID support.'));
+      }
+      const devices = await navigator.hid.requestDevice({
+        filters:
+        [
+          {
+            vendorId: 0x08f7,
+            productId: 0x0010
+          },
+        ]
+      });
+      // eslint-disable-next-line prefer-destructuring
+      device = devices[0];
     }
 
-    const bleDevice = await navigator.bluetooth.requestDevice({
-      filters: [{ namePrefix: 'GDX' }],
-      optionalServices: ['d91714ef-28b9-4f91-ba16-f0d9a604f112']
-    });
-
-    return godirect.createDevice(bleDevice);
-  }
+    return godirect.createDevice(device, { bluetooth });
+  },
 };
 
 export default godirect;
