@@ -13,7 +13,7 @@ export default class WebUsbDeviceAdapter {
 
   async writeCommand(commandBuffer) {
     const tmp = new Uint8Array([commandBuffer.byteLength, ...commandBuffer]);
-    const { reportId } = this.webUsbNativeDevice.collections[0].inputReports[0];
+    const { reportId } = this.webUsbNativeDevice.collections[0].outputReports[0];
     return this.webUsbNativeDevice.sendReport(reportId, tmp);
   }
 
@@ -29,6 +29,6 @@ export default class WebUsbDeviceAdapter {
   }
 
   async close() {
-    // Nothing to do
+    this.webUsbNativeDevice.close();
   }
 }

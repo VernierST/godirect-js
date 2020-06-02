@@ -6,16 +6,22 @@ const godirect = {
   /**
   * This returns a Device instance
   * @name createDevice
-  * @param {BluetoothDevice} bleDevice
+  * @param {Device} nativeDevice - this will be either a BluetoothDevice or HIDDevice depending on how it was created
   * @param {config} config
   * @returns {Promise} Promise object represents a Device instance
   */
-  async createDevice(baseDevice, { open = true, startMeasurements = true, bluetooth = true } = {}) {
-    let adapter = baseDevice;
+  async createDevice(nativeDevice, { open = true, startMeasurements = true } = {}) {
+    let adapter = nativeDevice;
 
-    // If not a go direct adapter, assume a web bluetooth device
+    // If not a go direct adapter then create it based on what was passed in
     if (!adapter.godirectAdapter) {
-      adapter = bluetooth ? new WebBluetoothDeviceAdapter(baseDevice) : new WebUsbDeviceAdapter(baseDevice);
+      if (nativeDevice.gatt) {
+        adapter = new WebBluetoothDeviceAdapter(nativeDevice);
+      } else if (nativeDevice.collections[0].outputReports[0]) {
+        adapter = new WebUsbDeviceAdapter(nativeDevice);
+      } else {
+        throw new Error(`Device Open Failed [ No matching adapter ]`);
+      }
     }
 
     const device = new Device(adapter);
@@ -33,10 +39,10 @@ const godirect = {
   },
 
   /**
-  * This invokes the navigator.bluetooth.requestDevice method and returns the selected device as a Device instance.
+  * This invokes the requestDevice method for either navigator.bluetooth or navigator.hid, and returns the selected device as a Device instance.
   * This can only be invoked via a user interaction (e.g. within a click event) otherwise you'll get a security warning.
   * @name selectDevice
-  * @param {bool} bluetooth
+  * @param {bool} bluetooth - bluetooth or usb
   * @returns {Promise} Promise object represents a Device instance
   */
   async selectDevice(bluetooth = true) {
@@ -68,7 +74,7 @@ const godirect = {
       device = devices[0];
     }
 
-    return godirect.createDevice(device, { bluetooth });
+    return godirect.createDevice(device);
   },
 };
 
