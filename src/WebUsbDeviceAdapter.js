@@ -4,7 +4,8 @@ export default class WebUsbDeviceAdapter {
     this.webUsbNativeDevice = webUsbNativeDevice;
     this.onResponse = null;
     this.onClosed = null;
-    this.maxPacketLength = 64;
+    this.reportId = 0;
+    this.maxPacketLength = 63; // standard hid packets are 64 so reserve one for the length
   }
 
   get godirectAdapter () {
@@ -12,9 +13,9 @@ export default class WebUsbDeviceAdapter {
   }
 
   async writeCommand(commandBuffer) {
+    // Add the length of the command buffer as first byte
     const tmp = new Uint8Array([commandBuffer.byteLength, ...commandBuffer]);
-    const { reportId } = this.webUsbNativeDevice.collections[0].outputReports[0];
-    return this.webUsbNativeDevice.sendReport(reportId, tmp);
+    return this.webUsbNativeDevice.sendReport(this.reportId, tmp);
   }
 
   // Todo: bikeshed on name of this function
@@ -22,8 +23,9 @@ export default class WebUsbDeviceAdapter {
     await this.webUsbNativeDevice.open();
     this.onResponse = onResponse;
     this.onClosed = onClosed;
+    this.reportId = this.webUsbNativeDevice.collections[0].outputReports[0].reportId;
     this.webUsbNativeDevice.oninputreport = (e) => {
-      // Pull off the length byte before sending it along for processing.
+      // Pull off the length byte before sending it along for processing
       const data = new DataView(e.data.buffer.slice(1));
       this.onResponse(data);
     };
