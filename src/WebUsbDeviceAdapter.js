@@ -1,9 +1,9 @@
-import { log } from './utils.js';
 
 export default class WebUsbDeviceAdapter {
   constructor(webUsbNativeDevice) {
     this.webUsbNativeDevice = webUsbNativeDevice;
     this.onResponse = null;
+    this.onClosed = null;
     this.maxPacketLength = 64;
   }
 
@@ -21,6 +21,7 @@ export default class WebUsbDeviceAdapter {
   async setup({ onClosed, onResponse }) {
     await this.webUsbNativeDevice.open();
     this.onResponse = onResponse;
+    this.onClosed = onClosed;
     this.webUsbNativeDevice.oninputreport = (e) => {
       // Pull off the length byte before sending it along for processing.
       const data = new DataView(e.data.buffer.slice(1));
@@ -30,5 +31,6 @@ export default class WebUsbDeviceAdapter {
 
   async close() {
     this.webUsbNativeDevice.close();
+    this.onClosed();
   }
 }
