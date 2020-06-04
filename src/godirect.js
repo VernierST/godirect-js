@@ -73,10 +73,9 @@ const godirect = {
       // UI only alllows one at a time anyways so just grab the first one.
       // eslint-disable-next-line prefer-destructuring
       device = devices[0];
-
-      // To mimic the bluetooth api, my guess is that they will implement something soon.
-      if (!device) throw new DOMException(`User cancelled the requestDevice() chooser.`);
     }
+
+    if (!device) throw new DOMException(`No device selected.`);
 
     return godirect.createDevice(device);
   },
