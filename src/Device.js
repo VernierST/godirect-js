@@ -376,10 +376,10 @@ export default class Device extends EventEmitter {
     // We can only write 20 bytes at a time so break up the buffer and send it across.
     while (remaining > 0) {
       try {
-        if (remaining > 20) {
-          chunk = buffer.subarray(offset, offset + 20);
-          remaining -= 20;
-          offset += 20;
+        if (remaining > this.device.maxPacketLength) {
+          chunk = buffer.subarray(offset, offset + this.device.maxPacketLength);
+          remaining -= this.device.maxPacketLength;
+          offset += this.device.maxPacketLength;
         } else {
           chunk = buffer.subarray(offset, offset + remaining);
           remaining = 0;

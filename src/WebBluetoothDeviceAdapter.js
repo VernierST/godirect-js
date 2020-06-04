@@ -7,6 +7,7 @@ const RESPONSE_CHARACTERISTIC = 'b41e6675-a329-40e0-aa01-44d2f444babe';
 export default class WebBluetoothDeviceAdapter {
   constructor(webBluetoothNativeDevice) {
     this.webBluetoothNativeDevice = webBluetoothNativeDevice;
+    this.maxPacketLength = 20;
 
     this.deviceCommand = null;
     this.deviceResponse = null;
