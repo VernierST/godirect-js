@@ -6,7 +6,7 @@ A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https
 
 ## Requirements
 
-This library is currently only implemented using [WebBluetooth](https://webbluetoothcg.github.io/web-bluetooth/) which has limited browser support.
+This library is currently only implemented using [WebBluetooth](https://webbluetoothcg.github.io/web-bluetooth/) and [WebHID](https://wicg.github.io/webhid/) both of which have limited browser support
 
 ## Installation
 
