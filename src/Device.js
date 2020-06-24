@@ -1,22 +1,10 @@
 /* eslint-disable no-bitwise */
-import {
-  commands,
-  measurementType,
-  responseType
-} from './constants.js';
-import {
-  bufferToHex,
-  appendBuffer,
-  log,
-  dir,
-  EventEmitter,
-  nonZero
-} from './utils.js';
+import { commands, measurementType, responseType } from './constants.js';
+import { bufferToHex, appendBuffer, log, dir, EventEmitter, nonZero } from './utils.js';
 
 import { Sensor, MeasurementInfo, SensorSpecs } from './Sensor.js';
 
 let _TextDecoder;
-
 export default class Device extends EventEmitter {
   constructor(device) {
     super();
@@ -45,30 +33,30 @@ export default class Device extends EventEmitter {
   }
 
   /**
-  * Returns a percentage of battery remaining
-  * @name getBatteryLevel
-  * @returns {number}
-  */
+   * Returns a percentage of battery remaining
+   * @name getBatteryLevel
+   * @returns {number}
+   */
   async getBatteryLevel() {
     const status = await this._getStatus();
     return status.battery;
   }
 
   /**
-  * Returns the battery charging state. See constants.js for defined charging states
-  * @name getChargingState
-  * @returns {number}
-  */
+   * Returns the battery charging state. See constants.js for defined charging states
+   * @name getChargingState
+   * @returns {number}
+   */
   async getChargingState() {
     const status = await this._getStatus();
     return status.chargingStatus;
   }
 
   /**
-  * Open the device and get information
-  * @name open
-  * @param {boolean} autoStart if set to true the device enables default sensors and starts measurements.
-  */
+   * Open the device and get information
+   * @name open
+   * @param {boolean} autoStart if set to true the device enables default sensors and starts measurements.
+   */
   async open(autoStart = false) {
     if (this.opened) {
       throw new Error(`Device cannot be opened because it is already open`);
@@ -88,9 +76,9 @@ export default class Device extends EventEmitter {
   }
 
   /**
-  * Close the device, stop measurements and send the disconnect.
-  * @name close
-  */
+   * Close the device, stop measurements and send the disconnect.
+   * @name close
+   */
   async close() {
     if (!this.opened) {
       throw new Error(`Device cannot be closed because it is not open`);
@@ -101,9 +89,9 @@ export default class Device extends EventEmitter {
   }
 
   /**
-  * Enable the default sensors specified by the device.
-  * @name enableDefaultSensors
-  */
+   * Enable the default sensors specified by the device.
+   * @name enableDefaultSensors
+   */
   enableDefaultSensors() {
     let mask = 1;
 
@@ -119,12 +107,12 @@ export default class Device extends EventEmitter {
   }
 
   /**
-  * Start measurements on the enabled sensors. If no sensors are enabled
-  * then enable the default sensors. If a period is specified then use it,
-  * if not use the fastest typical from the enabled sensors.
-  * @name start
-  * @param {number} period
-  */
+   * Start measurements on the enabled sensors. If no sensors are enabled
+   * then enable the default sensors. If a period is specified then use it,
+   * if not use the fastest typical from the enabled sensors.
+   * @name start
+   * @param {number} period
+   */
   start(period = null) {
     let enabledSensors = this.sensors.filter(s => s.enabled);
 
@@ -146,41 +134,43 @@ export default class Device extends EventEmitter {
   }
 
   /**
-  * Stop measurements on the device.
-  * @name stop
-  */
+   * Stop measurements on the device.
+   * @name stop
+   */
   stop() {
     this._stopMeasurements();
   }
 
   /**
-  * Based on a number return the sensor.
-  * @name getSensor
-  * @returns {sensor}
-  */
+   * Based on a number return the sensor.
+   * @name getSensor
+   * @returns {sensor}
+   */
   getSensor(number) {
     return this.sensors.find(c => c.number === number);
   }
 
   async _connect() {
-    return this.device.setup({
-      onClosed: () => this._onClosed(),
-      onResponse: data => this._handleResponse(data)
-    }).then(() => {
-      this.writeQueue = [];
+    return this.device
+      .setup({
+        onClosed: () => this._onClosed(),
+        onResponse: data => this._handleResponse(data),
+      })
+      .then(() => {
+        this.writeQueue = [];
 
-      // Enforce that only one command is set to the device at once
-      // and nothing else is sent until the response or timeout happens.
-      this.deviceWriteInterval = setInterval(() => {
-        if (this.writeQueue && this.writeQueue.length > 0) {
-          const q = this.writeQueue[0];
-          if (!q.written) {
-            this._writeToDevice(q.buffer);
-            q.written = true;
+        // Enforce that only one command is set to the device at once
+        // and nothing else is sent until the response or timeout happens.
+        this.deviceWriteInterval = setInterval(() => {
+          if (this.writeQueue && this.writeQueue.length > 0) {
+            const q = this.writeQueue[0];
+            if (!q.written) {
+              this._writeToDevice(q.buffer);
+              q.written = true;
+            }
           }
-        }
-      }, 10);
-    });
+        }, 10);
+      });
   }
 
   async _disconnect() {
@@ -192,7 +182,7 @@ export default class Device extends EventEmitter {
 
   _init() {
     this.collecting = false;
-    this.rollingCounter = 0xFF;
+    this.rollingCounter = 0xff;
 
     return this._sendCommand(commands.INIT);
   }
@@ -203,7 +193,9 @@ export default class Device extends EventEmitter {
     // If we flagged that we are looking for more data then just pull off more
     if (this.remainingResponseLegnth > 0) {
       this.remainingResponseLegnth -= notification.buffer.byteLength;
-      this.response = new DataView(appendBuffer(this.response.buffer, notification.buffer.slice(0)));
+      this.response = new DataView(
+        appendBuffer(this.response.buffer, notification.buffer.slice(0)),
+      );
       if (this.remainingResponseLegnth > 0) {
         return;
       }
@@ -312,7 +304,9 @@ export default class Device extends EventEmitter {
   }
 
   _resolveWriteCommand(command, rollingCounter, response) {
-    const item = this.writeQueue.find(q => q.command === command && q.rollingCounter === rollingCounter);
+    const item = this.writeQueue.find(
+      q => q.command === command && q.rollingCounter === rollingCounter,
+    );
 
     if (item) {
       item.resolve(response);
@@ -332,7 +326,6 @@ export default class Device extends EventEmitter {
     this.emit('device-closed');
   }
 
-
   _decRollingCounter() {
     this.rollingCounter -= 1;
     return this.rollingCounter;
@@ -344,7 +337,7 @@ export default class Device extends EventEmitter {
 
     for (let i = 0; i < length; ++i) {
       checksum += buff[i];
-      checksum &= 0xFF;
+      checksum &= 0xff;
     }
 
     if (checksum < 0 || checksum > 255) {
@@ -400,11 +393,19 @@ export default class Device extends EventEmitter {
         buffer: command,
         written: false,
         resolve,
-        reject
+        reject,
       });
       setTimeout(() => {
-        this.writeQueue = this.writeQueue.filter(q => q.command === command[4] && q.rollingCounter !== command[2]);
-        reject(new Error(`write command timed out after 5s. Command: ${command[4].toString(16)} Rolling Counter: ${command[2].toString(16)}`));
+        this.writeQueue = this.writeQueue.filter(
+          q => q.command === command[4] && q.rollingCounter !== command[2],
+        );
+        reject(
+          new Error(
+            `write command timed out after 5s. Command: ${command[4].toString(
+              16,
+            )} Rolling Counter: ${command[2].toString(16)}`,
+          ),
+        );
       }, 5000);
     });
 
@@ -417,14 +418,14 @@ export default class Device extends EventEmitter {
       masterFirmwareVersion: `${response.getUint8(2)}.${response.getUint8(3)}`,
       bleFirmwareVersion: `${response.getUint8(6)}.${response.getUint8(9)}`,
       battery: response.getUint8(10),
-      chargingStatus: `${response.getUint8(11)}`
+      chargingStatus: `${response.getUint8(11)}`,
     };
 
     return status;
   }
 
   async _getAvailableSensors() {
-    await this._sendCommand(commands.GET_SENSOR_IDS).then((response) => {
+    await this._sendCommand(commands.GET_SENSOR_IDS).then(response => {
       this.availableSensors = response.getUint32(0, true);
       log(`Get Available Sensors Returned ${this.availableSensors}`);
     });
@@ -439,7 +440,7 @@ export default class Device extends EventEmitter {
   }
 
   _getDefaultSensorsMask() {
-    return this._sendCommand(commands.GET_DEFAULT_SENSORS_MASK).then((response) => {
+    return this._sendCommand(commands.GET_DEFAULT_SENSORS_MASK).then(response => {
       this.defaultSensorsMask = response.getUint32(0, true);
       log(`Default Sensors:`);
       dir(this);
@@ -447,7 +448,7 @@ export default class Device extends EventEmitter {
   }
 
   _getDeviceInfo() {
-    return this._sendCommand(commands.GET_INFO).then((response) => {
+    return this._sendCommand(commands.GET_INFO).then(response => {
       const decoder = new _TextDecoder('utf-8');
 
       // OrderCode offset = 6 (header+cmd+counter)
@@ -472,7 +473,7 @@ export default class Device extends EventEmitter {
 
     command[1] = i;
 
-    return this._sendCommand(command).then((response) => {
+    return this._sendCommand(command).then(response => {
       // We are getting false positives returned so making sure it has a sensorid sorts that out
       // until I can get with Kevin to figure out what is going on.
       const sensorId = response.getUint32(2, true);
@@ -488,7 +489,7 @@ export default class Device extends EventEmitter {
           minPeriod: response.getUint32(124, true) / 1000,
           maxPeriod: ((response.getUint32(132, true) << 32) + response.getUint32(128, true)) / 1000,
           typicalPeriod: response.getUint32(136, true) / 1000,
-          granularity: response.getUint32(140, true) / 1000
+          granularity: response.getUint32(140, true) / 1000,
         });
 
         const sensorSpecs = new SensorSpecs({
@@ -501,7 +502,7 @@ export default class Device extends EventEmitter {
           unit: decoder.decode(new Uint8Array(response.buffer, 74, 32).filter(nonZero)),
           mutalExclusionMask: response.getUint32(144, true),
           measurementInfo,
-          sensorId
+          sensorId,
         });
 
         const sensor = new Sensor(sensorSpecs);
@@ -516,7 +517,7 @@ export default class Device extends EventEmitter {
           // Look through all the sensors to make sure that they aren't mutually exclusive.
           if (sensor.enabled) {
             this.measurementPeriod = sensor.specs.measurementInfo.typicalPeriod;
-            this.sensors.forEach((sensor2) => {
+            this.sensors.forEach(sensor2 => {
               if (sensor.number !== sensor2.number) {
                 if (sensor2.enabled) {
                   const mask = 1 << sensor2.number;
@@ -563,17 +564,19 @@ export default class Device extends EventEmitter {
     }
 
     log(`MeasurementPeriod: ${measurementPeriodInMicroseconds}`);
-    command[3] = (measurementPeriodInMicroseconds >> 0) & 0xFF;
-    command[4] = (measurementPeriodInMicroseconds >> 8) & 0xFF;
-    command[5] = (measurementPeriodInMicroseconds >> 16) & 0xFF;
-    command[6] = (measurementPeriodInMicroseconds >> 24) & 0xFF;
+    command[3] = (measurementPeriodInMicroseconds >> 0) & 0xff;
+    command[4] = (measurementPeriodInMicroseconds >> 8) & 0xff;
+    command[5] = (measurementPeriodInMicroseconds >> 16) & 0xff;
+    command[6] = (measurementPeriodInMicroseconds >> 24) & 0xff;
     return this._sendCommand(command);
   }
 
   _getEnabledChannelMask() {
     let channelMask = 0;
     const enabledSensors = this.sensors.filter(s => s.enabled);
-    enabledSensors.forEach((s) => { channelMask += 1 << s.number; });
+    enabledSensors.forEach(s => {
+      channelMask += 1 << s.number;
+    });
     return channelMask;
   }
 
@@ -582,11 +585,11 @@ export default class Device extends EventEmitter {
       const channelMask = this._getEnabledChannelMask();
       log(`ChannelMask: ${channelMask}`);
       const command = new Uint8Array(commands.START_MEASUREMENTS);
-      command[3] = (channelMask >> 0) & 0xFF;
-      command[4] = (channelMask >> 8) & 0xFF;
-      command[5] = (channelMask >> 16) & 0xFF;
-      command[6] = (channelMask >> 24) & 0xFF;
-      return this._sendCommand(command).then((response) => {
+      command[3] = (channelMask >> 0) & 0xff;
+      command[4] = (channelMask >> 8) & 0xff;
+      command[5] = (channelMask >> 16) & 0xff;
+      command[6] = (channelMask >> 24) & 0xff;
+      return this._sendCommand(command).then(response => {
         if (response.getUint8(0) === 0) {
           this.collecting = true;
           this.emit('measurements-started');
@@ -596,7 +599,7 @@ export default class Device extends EventEmitter {
   }
 
   _stopMeasurements() {
-    return this._sendCommand(commands.STOP_MEASUREMENTS).then((response) => {
+    return this._sendCommand(commands.STOP_MEASUREMENTS).then(response => {
       if (response.getUint8(0) === 0) {
         this.collecting = false;
         this.emit('measurements-stopped');

@@ -12,81 +12,84 @@ const terserPlugin = terser({
         // multiline comment
         return /@preserve|@license|@cc_on/i.test(text);
       }
-    }
-  }
+    },
+  },
 });
 
 const licensePlugin = license({
-  banner: `Copyright (c) ${(new Date().getFullYear())} Vernier Software. All rights reserved.
+  banner: `Copyright (c) ${new Date().getFullYear()} Vernier Software. All rights reserved.
     This code may only be used under the BSD 3-Clause license found at
     https://raw.githubusercontent.com/VernierST/godirect-js/master/LICENSE`,
 });
 
 export default [
-{
-  input: './src/godirect.js',
-  output: {
-    file: './dist/godirect.min.esm.js',
-    format: 'esm'
+  {
+    input: './src/godirect.js',
+    output: {
+      file: './dist/godirect.min.esm.js',
+      format: 'esm',
+    },
+    plugins: [terserPlugin, licensePlugin],
   },
-  plugins: [
-    terserPlugin,
-    licensePlugin
-  ]
-},
-{
-  input: './src/godirect.js',
-  output: {
-    file: './dist/godirect.min.cjs.js',
-    format: 'cjs',
-    name: 'godirect'
+  {
+    input: './src/godirect.js',
+    output: {
+      file: './dist/godirect.min.cjs.js',
+      format: 'cjs',
+      name: 'godirect',
+    },
+    plugins: [
+      licensePlugin,
+      babel({
+        babelrc: false,
+        presets: [
+          [
+            '@babel/env',
+            {
+              targets: {
+                node: '8.0.0',
+              },
+              modules: false,
+              useBuiltIns: 'usage',
+              forceAllTransforms: true,
+            },
+          ],
+        ],
+        exclude: 'node_modules/**',
+      }),
+      nodeResolve(),
+      terserPlugin,
+      licensePlugin,
+    ],
   },
-  plugins: [
-    licensePlugin,
-    babel({
-      babelrc: false,
-      presets: [
-        ['@babel/env', {
-	        targets: {
-	          node: '8.0.0'
-	        },
-          modules: false,
-          useBuiltIns: 'usage',
-          forceAllTransforms: true
-        }]
-      ],
-      exclude: 'node_modules/**'
-    }),
-    nodeResolve(),
-    terserPlugin,
-    licensePlugin
-  ]
-},
-{
-  input: './src/godirect.js',
-  output: {
-    file: './dist/godirect.min.umd.js',
-    format: 'umd',
-    name: 'godirect'
+  {
+    input: './src/godirect.js',
+    output: {
+      file: './dist/godirect.min.umd.js',
+      format: 'umd',
+      name: 'godirect',
+    },
+    plugins: [
+      babel({
+        babelrc: false,
+        presets: [
+          [
+            '@babel/env',
+            {
+              targets: {
+                node: '8.0.0',
+              },
+              modules: false,
+              useBuiltIns: 'usage',
+              forceAllTransforms: true,
+            },
+          ],
+        ],
+        exclude: 'node_modules/**',
+      }),
+      nodeResolve(),
+      terserPlugin,
+      licensePlugin,
+    ],
   },
-  plugins: [
-    babel({
-      babelrc: false,
-      presets: [
-        ['@babel/env', {
-	        targets: {
-	          node: '8.0.0'
-	        },
-          modules: false,
-          useBuiltIns: 'usage',
-          forceAllTransforms: true
-        }]
-      ],
-      exclude: 'node_modules/**'
-    }),
-    nodeResolve(),
-    terserPlugin,
-    licensePlugin,
-  ]
-}
 ];

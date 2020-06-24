@@ -1,10 +1,10 @@
 const verboseLogging = false;
 
-const isFunction = (obj) => {
+const isFunction = obj => {
   return typeof obj === 'function' || false;
 };
 
-export const nonZero = x => (x !== (undefined || null || '' || 0));
+export const nonZero = x => x !== (undefined || null || '' || 0);
 
 export class EventEmitter {
   constructor() {
@@ -24,7 +24,7 @@ export class EventEmitter {
 
     if (listeners && listeners.length) {
       const index = listeners.reduce((i, listener, index) => {
-        const item = (isFunction(listener) && listener === callback) ? i = index : i;
+        const item = isFunction(listener) && listener === callback ? (i = index) : i;
         return item;
       }, -1);
 
@@ -46,7 +46,7 @@ export class EventEmitter {
     const listeners = this._listenerMap.get(name);
 
     if (listeners && listeners.length) {
-      listeners.forEach((listener) => {
+      listeners.forEach(listener => {
         listener(...args);
       });
       return true;
@@ -56,28 +56,26 @@ export class EventEmitter {
   }
 }
 
-
 export const log = (function log() {
   if (!verboseLogging) {
     return function noop() {};
   }
   const context = 'GODIRECT:';
   return Function.prototype.bind.call(console.log, console, context);
-}());
+})();
 
 export const dir = (function dir() {
   if (!verboseLogging) {
     return function noop() {};
   }
   return Function.prototype.bind.call(console.dir, console);
-}());
+})();
 
 export function bufferToHex(buffer) {
   return Array.from(new Uint8Array(buffer))
     .map(b => b.toString(16).padStart(2, '0'))
     .join(' ');
 }
-
 
 export function appendBuffer(buffer1, buffer2) {
   const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
