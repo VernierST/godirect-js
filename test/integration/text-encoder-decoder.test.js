@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 
-
 describe('TextEncoder/Decoder', () => {
   test('encodes and decodes correctly', async () => {
     const browser = await puppeteer.launch();

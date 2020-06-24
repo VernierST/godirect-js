@@ -1,4 +1,3 @@
-
 export default class WebUsbDeviceAdapter {
   constructor(webUsbNativeDevice) {
     this.webUsbNativeDevice = webUsbNativeDevice;
@@ -8,7 +7,7 @@ export default class WebUsbDeviceAdapter {
     this.maxPacketLength = 63; // standard hid packets are 64 so reserve one for the length
   }
 
-  get godirectAdapter () {
+  get godirectAdapter() {
     return true;
   }
 
@@ -24,7 +23,7 @@ export default class WebUsbDeviceAdapter {
     this.onResponse = onResponse;
     this.onClosed = onClosed;
     this.reportId = this.webUsbNativeDevice.collections[0].outputReports[0].reportId;
-    this.webUsbNativeDevice.oninputreport = (e) => {
+    this.webUsbNativeDevice.oninputreport = e => {
       // Pull off the length byte before sending it along for processing
       const data = new DataView(e.data.buffer.slice(1));
       this.onResponse(data);
