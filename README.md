@@ -1,4 +1,4 @@
-# GODIRECT JS - Vernier Go Direct® Sensor Library 
+# GODIRECT JS - Vernier Go Direct® Sensor Library
 
 [![Build Status](https://travis-ci.org/VernierST/godirect-js.svg?branch=main)](https://travis-ci.org/VernierST/godirect-js) [![Dependabot](https://flat.badgen.net/dependabot/vernierst/godirect-js/?icon=dependabot)](https://flat.badgen.net/dependabot/vernierst/godirect-js/?icon=dependabot)
 
@@ -7,6 +7,8 @@ A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https
 ## Requirements
 
 This library is currently only implemented using [WebBluetooth](https://webbluetoothcg.github.io/web-bluetooth/) and [WebHID](https://wicg.github.io/webhid/) both of which have limited browser support
+
+Partial WebHID functionality is available in Chrome 78 behind a flag on desktop OSes. You will need to enable the "Experimental Web Platform Features" flag (chrome://flags/#enable-experimental-web-platform-features) and restart Chrome.
 
 ## Installation
 
