@@ -31,7 +31,7 @@
   "scripts": {
     "lint": "eslint .",
     "bundle": "rollup -c",
-    "test": "yarn lint && jest"
+    "test": "npm run lint && jest"
   },
   "license": "BSD-3-Clause",
   "description": "A JavaScript library to easily interact with [Vernier Go Direct® Sensors](https://www.vernier.com/products/sensors/go-direct-sensors).",
@@ -44,8 +44,11 @@
     "godirect",
     "gdx",
     "bluetooth",
+    "usb",
     "sensor",
-    "webbluetooth"
+    "webbluetooth",
+    "webusb",
+    "webhid"
   ],
   "author": "Vernier Software & Technology",
   "homepage": "https://github.com/VernierST/godirect-js",
