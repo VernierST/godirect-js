@@ -19,7 +19,7 @@ const terserPlugin = terser({
 const licensePlugin = license({
   banner: `Copyright (c) ${new Date().getFullYear()} Vernier Software. All rights reserved.
     This code may only be used under the BSD 3-Clause license found at
-    https://raw.githubusercontent.com/VernierST/godirect-js/master/LICENSE`,
+    https://raw.githubusercontent.com/VernierST/godirect-js/main/LICENSE`,
 });
 
 export default [
