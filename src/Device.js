@@ -415,7 +415,7 @@ export default class Device extends EventEmitter {
   async _getStatus() {
     const response = await this._sendCommand(commands.GET_STATUS);
     const status = {
-      masterFirmwareVersion: `${response.getUint8(2)}.${response.getUint8(3)}`,
+      mainFirmwareVersion: `${response.getUint8(2)}.${response.getUint8(3)}`,
       bleFirmwareVersion: `${response.getUint8(6)}.${response.getUint8(9)}`,
       battery: response.getUint8(10),
       chargingStatus: `${response.getUint8(11)}`,
