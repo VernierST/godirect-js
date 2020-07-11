@@ -54,7 +54,7 @@ selectDeviceBtn.addEventListener('click', async () => {
 **`NOTE:` you cannot invoke `godirect.selectDevice()` outside of a user interaction, like a click event. This is part of the browser security model.**
 ```javascript
 // opens the browser list of ble devices matching to GDX
-const device = godirect.selectDevice();
+const device = await godirect.selectDevice();
 
 // Get a filtered array of only the enabled sensor(s).
 const enabledSensors = device.sensors.filter(s => s.enabled);
