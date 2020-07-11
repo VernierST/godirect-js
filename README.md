@@ -63,7 +63,7 @@ const enabledSensors = device.sensors.filter(s => s.enabled);
 enabledSensors.forEach(sensor => {
   sensor.on('value-changed', (sensor) => {
     // log the sensor name, new value, and units.
-    console.log(`Sensor: ${sensor.name} value: ${sensor.value} units: ${sensor.units}`);
+    console.log(`Sensor: ${sensor.name} value: ${sensor.value} units: ${sensor.unit}`);
   });
 });
 ```
