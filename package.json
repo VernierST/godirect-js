@@ -37,7 +37,6 @@
   "scripts": {
     "lint": "eslint .",
     "bundle": "rollup -c && npx typescript",
-    "generateTypes": "npx typescript",
     "test": "npm run lint && jest"
   },
   "license": "BSD-3-Clause",
