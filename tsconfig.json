@@ -1,0 +1,9 @@
+{
+  "include": ["src/godirect.js"],
+  "compilerOptions": {
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "types",
+  },
+}

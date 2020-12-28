@@ -3,8 +3,14 @@
   "version": "1.7.0",
   "unpkg": "dist/godirect.min.umd.js",
   "browser": "dist/godirect.min.esm.js",
-  "main": "dist/godirect.min.cjs.js",
+  "main": "src/godirect.js",
   "module": "dist/godirect.min.esm.js",
+  "types": "types/godirect.d.ts",
+  "exports": {
+    "require": "./dist/godirect.min.cjs.js",
+    "import": "./dist/godirect.min.esm.js",
+    "default": "./dist/godirect.min.esm.js"
+  },
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/plugin-transform-regenerator": "^7.0.0",
@@ -30,7 +36,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "bundle": "rollup -c",
+    "bundle": "rollup -c && npx typescript",
     "test": "npm run lint && jest"
   },
   "license": "BSD-3-Clause",
