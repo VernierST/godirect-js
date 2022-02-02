@@ -16,7 +16,7 @@
     "@babel/preset-env": "^7.15.6",
     "@babel/runtime": "^7.15.4",
     "@babel/runtime-corejs3": "^7.15.4",
-    "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-commonjs": "^21.0.1",
     "babel-jest": "^27.2.0",
     "core-js": "^3.17.3",
     "eslint": "^8.8.0",
