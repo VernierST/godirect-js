@@ -309,8 +309,9 @@ export default class Device extends EventEmitter {
     );
 
     if (item) {
-      item.resolve(response);
+      clearTimeout(item.timeout);
       this.writeQueue = this.writeQueue.filter(q => q !== item);
+      item.resolve(response);
     }
   }
 
@@ -387,18 +388,16 @@ export default class Device extends EventEmitter {
   _queueWriteCommand(command) {
     log(`command queued: ${bufferToHex(command)}`);
     const promise = new Promise((resolve, reject) => {
-      this.writeQueue.push({
+      const cmd = {
         command: command[4],
         rollingCounter: command[2],
         buffer: command,
         written: false,
         resolve,
         reject,
-      });
-      setTimeout(() => {
-        this.writeQueue = this.writeQueue.filter(
-          q => q.command === command[4] && q.rollingCounter !== command[2],
-        );
+      };
+      cmd.timeout = setTimeout(() => {
+        this.writeQueue = this.writeQueue.filter(q => q !== cmd);
         reject(
           new Error(
             `write command timed out after 5s. Command: ${command[4].toString(
@@ -407,6 +406,7 @@ export default class Device extends EventEmitter {
           ),
         );
       }, 5000);
+      this.writeQueue.push(cmd);
     });
 
     return promise;

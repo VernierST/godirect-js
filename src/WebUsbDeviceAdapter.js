@@ -13,7 +13,9 @@ export default class WebUsbDeviceAdapter {
 
   async writeCommand(commandBuffer) {
     // Add the length of the command buffer as first byte
-    const tmp = new Uint8Array([commandBuffer.byteLength, ...commandBuffer]);
+    const tmp = new Uint8Array(64);
+    tmp[0] = commandBuffer.byteLength;
+    tmp.set(commandBuffer, 1);
     return this.webUsbNativeDevice.sendReport(this.reportId, tmp);
   }
 
