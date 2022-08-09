@@ -397,7 +397,9 @@ export default class Device extends EventEmitter {
       });
       setTimeout(() => {
         this.writeQueue = this.writeQueue.filter(
-          q => q.command === command[4] && q.rollingCounter !== command[2],
+          // Filter out the command that timed out, using its unique rollingcounter,
+          // under the assumption that we don't have 256+ commands queued.
+          q => q.rollingCounter !== command[2],
         );
         reject(
           new Error(
