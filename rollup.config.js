@@ -1,6 +1,6 @@
-import { terser } from 'rollup-plugin-terser';
-import babel from 'rollup-plugin-babel';
-import nodeResolve from 'rollup-plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
+import babel from '@rollup/plugin-babel';
+import nodeResolve from '@rollup/plugin-node-resolve';
 import license from 'rollup-plugin-license';
 import commonjs from '@rollup/plugin-commonjs';
 
@@ -43,7 +43,7 @@ export default [
     plugins: [
       babel({
         babelrc: false,
-        runtimeHelpers: false,
+        babelHelpers: 'bundled',
         plugins: [
           [
             '@babel/plugin-transform-runtime',
@@ -87,7 +87,51 @@ export default [
     plugins: [
       babel({
         babelrc: false,
-        runtimeHelpers: false,
+        babelHelpers: 'bundled',
+        plugins: [
+          [
+            '@babel/plugin-transform-runtime',
+            {
+              regenerator: true,
+              helpers: false,
+              corejs: 3,
+            },
+          ]
+        ],
+        presets: [
+          [
+            '@babel/env',
+            {
+              targets: {
+                node: '8.0.0',
+              },
+              modules: false,
+              useBuiltIns: 'entry',
+              corejs: 3,
+              forceAllTransforms: true,
+            },
+          ],
+        ],
+        exclude: 'node_modules/**',
+      }),
+      nodeResolve(),
+      commonjs(),
+      terserPlugin,
+      licensePlugin,
+    ],
+  },
+  {
+    input: './src/webVPython.js',
+    output: {
+      file: './dist/webVPython.js',
+      format: 'umd',
+      name: 'gdx',
+      exports: 'default',
+    },
+    plugins: [
+      babel({
+        babelrc: false,
+        babelHelpers: 'bundled',
         plugins: [
           [
             '@babel/plugin-transform-runtime',
