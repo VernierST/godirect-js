@@ -56,4 +56,7 @@ module.exports = {
     'arrow-body-style': 'off',
     'class-methods-use-this': 'off',
   },
+  'parserOptions': {
+    'ecmaVersion': 2020
+  }
 };
