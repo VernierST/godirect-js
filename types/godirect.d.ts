@@ -7,7 +7,7 @@ declare namespace godirect {
     * @param {config} config
     * @returns {Promise} Promise object represents a Device instance
     */
-    function createDevice(nativeDevice: Device, { open, startMeasurements }?: any): Promise<any>;
+    function createDevice(nativeDevice: Device, { open, startMeasurements }?: config): Promise<any>;
     /**
     * This returns a Device instance
     * @name createDevice
@@ -15,7 +15,7 @@ declare namespace godirect {
     * @param {config} config
     * @returns {Promise} Promise object represents a Device instance
     */
-    function createDevice(nativeDevice: Device, { open, startMeasurements }?: any): Promise<any>;
+    function createDevice(nativeDevice: Device, { open, startMeasurements }?: config): Promise<any>;
     /**
     * This invokes the requestDevice method for either navigator.bluetooth or navigator.hid, and returns the selected device as a Device instance.
     * This can only be invoked via a user interaction (e.g. within a click event) otherwise you'll get a security warning.
@@ -23,7 +23,7 @@ declare namespace godirect {
     * @param {bool} bluetooth - bluetooth or usb
     * @returns {Promise} Promise object represents a Device instance
     */
-    function selectDevice(bluetooth?: any): Promise<any>;
+    function selectDevice(bluetooth?: bool): Promise<any>;
     /**
     * This invokes the requestDevice method for either navigator.bluetooth or navigator.hid, and returns the selected device as a Device instance.
     * This can only be invoked via a user interaction (e.g. within a click event) otherwise you'll get a security warning.
@@ -31,6 +31,6 @@ declare namespace godirect {
     * @param {bool} bluetooth - bluetooth or usb
     * @returns {Promise} Promise object represents a Device instance
     */
-    function selectDevice(bluetooth?: any): Promise<any>;
+    function selectDevice(bluetooth?: bool): Promise<any>;
 }
 import Device from "./Device.js";

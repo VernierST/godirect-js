@@ -60,7 +60,7 @@ export default class Device extends EventEmitter {
      * @name getSensor
      * @returns {sensor}
      */
-    getSensor(number: any): any;
+    getSensor(number: any): sensor;
     _connect(): Promise<any>;
     writeQueue: any;
     deviceWriteInterval: NodeJS.Timeout;
