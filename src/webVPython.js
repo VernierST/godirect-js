@@ -81,7 +81,7 @@ class VernierGDX extends EventTarget {
   }
 
   get samplesPerSecond() {
-    return 1000 / this.period;
+    return Math.round(1000 / this.period);
   }
 
   set samplesPerSecond(value) {
@@ -94,7 +94,7 @@ class VernierGDX extends EventTarget {
   }
 
   set period(value) {
-    this._period = value || 100;
+    this._period = Number(value) || 100;
     if (this.sampleLabel) this.sampleLabel.textContent = `${this.samplesPerSecond} samples/second`;
     this.devices.forEach(element => {
       if (!element) return;
@@ -104,7 +104,7 @@ class VernierGDX extends EventTarget {
 
   /** @type {number} seconds between collections */
   get periodS() {
-    return this.period / 1000;
+    return Number(this.period / 1000);
   }
 
   /**
@@ -429,6 +429,7 @@ class VernierGDX extends EventTarget {
         this.sampleSlider.value = this.samplesPerSecond;
         this.sampleSlider.setAttribute('min', 1);
         this.sampleSlider.setAttribute('max', 100);
+        this.sampleSlider.setAttribute('step', 1);
         this.sampleSlider.addEventListener('input', ({ target: { value } }) => {
           this.samplesPerSecond = value;
         });
