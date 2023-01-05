@@ -20,6 +20,8 @@
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.1.0",
+    "@web/dev-server": "^0.1.35",
+    "@web/dev-server-esbuild": "^0.3.3",
     "babel-jest": "^29.2.2",
     "core-js": "^3.26.0",
     "eslint": "^8.26.0",
@@ -39,6 +41,7 @@
   "scripts": {
     "lint": "eslint .",
     "bundle": "rollup -c && npx -p typescript tsc",
+    "start": "web-dev-server --root-dir ./dist --port 8050",
     "test": "npm run lint && jest"
   },
   "license": "BSD-3-Clause",
