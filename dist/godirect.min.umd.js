@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 Vernier Software. All rights reserved.
+ * Copyright (c) 2023 Vernier Software. All rights reserved.
  * This code may only be used under the BSD 3-Clause license found at
  * https://raw.githubusercontent.com/VernierST/godirect-js/main/LICENSE
  */

@@ -76,7 +76,8 @@ class VernierGDX extends EventTarget {
       }
       return;
     }
-    this.actionButton.textContent = 'Collect';
+    this.actionButton.textContent = this._collectionButtonText;
+    this.devices.forEach(deviceElement => deviceElement.stopRead());
     delete this.firstRead;
   }
 
@@ -275,6 +276,10 @@ class VernierGDX extends EventTarget {
     throw new Error('connection must be "ble" for bluetooth or "usb" for a wired connection');
   }
 
+  collectFor(milliseconds = -1) {
+    this._collectFor = milliseconds;
+  }
+
   /**
    *
    * @param {OpenOptions} [options] the options passed when calling open()
@@ -296,14 +301,22 @@ class VernierGDX extends EventTarget {
    */
   read() {
     if (!this.devices) return false;
+    if (this._collectFor > 0 && !this._reading) {
+      this._reading = true;
+      setTimeout(() => {
+        this._reading = false;
+        this.started = false;
+      }, this._collectFor);
+    }
 
-    const measurements = this.devices
-      .flatMap(deviceEl => Object.values(deviceEl.measurements))
-      .filter(Boolean);
+    const chartMeasurements = this.devices
+      .flatMap(deviceEl => Object.values(deviceEl.chartMeasurements))
+      .filter(measurement => ![null, undefined].includes(measurement));
+
     this.dispatchEvent(
       new CustomEvent('data-read', {
         detail: {
-          measurements: measurements.map(sensorMeasurements =>
+          measurements: chartMeasurements.map(sensorMeasurements =>
             sensorMeasurements.map((measurement, measurementIndex) => [
               this.periodS * measurementIndex,
               measurement,
@@ -312,11 +325,10 @@ class VernierGDX extends EventTarget {
         },
       }),
     );
-    if (measurements.flat().length)
-      this.lastMeasurements = measurements.map(
-        sensorMeasurements => sensorMeasurements.slice(-1)[0],
-      );
-    return this.lastMeasurements;
+
+    const readMeasurements = this.devices
+      .flatMap(deviceEl => deviceEl.readMeasurement());
+    return readMeasurements.every(measurement => measurement === null) ? null : readMeasurements;
   }
 
   /**
@@ -347,11 +359,23 @@ class VernierGDX extends EventTarget {
   }
 
   /**
+   * a period based frequency to pass to the rate() function equal to 2x the period
+   * @returns {number}
+   */
+  vp_rate() {
+    return (2000 / this.period);
+  }
+
+  /**
    * returns the current period
    * @returns {number}
    */
   vp_get_slider_period() {
     return this.period;
+  }
+
+  get _collectionButtonText() {
+    return this._collectFor > 0 ? `Collect for ${this._collectFor}ms` : 'Collect';
   }
 
   /**
@@ -375,7 +399,7 @@ class VernierGDX extends EventTarget {
         this.actionButton.style.color = '#00aa00';
         this.actionButton.style.fontSize = '20px';
         this.actionButton.style.padding = '4px 8px';
-        this.actionButton.textContent = 'Collect';
+        this.actionButton.textContent = this._collectionButtonText;
         this.actionButton.addEventListener('click', this._toggleStarted.bind(this));
 
         this.exitButton = document.createElement('button');
@@ -476,7 +500,7 @@ class VernierDevice extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.measurements = {};
+    this.resetMeasurements();
   }
 
   get styles() {
@@ -521,16 +545,29 @@ class VernierDevice extends HTMLElement {
     });
   }
 
+  resetMeasurements() {
+    this.chartMeasurements = {};
+    this.readMeasurements = {};
+  }
+
   deviceStart() {
     if (!this.device.item.sensors) return;
+    this.resetMeasurements();
     const enabledSensors = this.device.item.sensors.filter(deviceSensor => deviceSensor.enabled);
     if (enabledSensors.length) {
       enabledSensors.forEach(sensor => {
-        this.measurements[sensorNameWithUnit(sensor)] =
-          this.measurements?.[sensorNameWithUnit(sensor)]?.slice(-1);
+        this.chartMeasurements[sensorNameWithUnit(sensor)] =
+          this.chartMeasurements?.[sensorNameWithUnit(sensor)]?.slice(-1);
+        this.readMeasurements[sensorNameWithUnit(sensor)] =
+          this.readMeasurements?.[sensorNameWithUnit(sensor)]?.slice(-1);
       });
+      this._reading = true;
       this.device.item.start(this.period);
     }
+  }
+
+  stopRead() {
+    this._reading = false;
   }
 
   disconnect() {
@@ -544,14 +581,23 @@ class VernierDevice extends HTMLElement {
     this.remove();
   }
 
+  readMeasurement() {
+    return Object.values(this.readMeasurements).map(deviceReadings => deviceReadings.shift() ?? null);
+  }
+
   setupSensors() {
     this.render();
     this.device.item.sensors.forEach(sensor => {
       sensor.on('value-changed', ({ value }) => {
         if (!sensor.enabled) return;
-        if (!this.measurements[sensorNameWithUnit(sensor)])
-          this.measurements[sensorNameWithUnit(sensor)] = [];
-        this.measurements[sensorNameWithUnit(sensor)].push(value);
+        if(this._reading) {
+          if (!this.chartMeasurements[sensorNameWithUnit(sensor)]) {
+            this.chartMeasurements[sensorNameWithUnit(sensor)] = [];
+            this.readMeasurements[sensorNameWithUnit(sensor)] = [];
+          }
+          this.chartMeasurements[sensorNameWithUnit(sensor)].push(value);
+          this.readMeasurements[sensorNameWithUnit(sensor)].push(value);
+        }
         this.shadowRoot.querySelector(
           `[data-sensor-channel="${sensorNameWithUnit(sensor)}"] [data-sensor-reading]`,
         ).textContent = `${Math.round(value * 100) / 100} ${sensor.unit}`;
@@ -568,8 +614,14 @@ class VernierDevice extends HTMLElement {
         this.dispatchEvent(new CustomEvent('sensor-toggled', { detail: this.device }));
         this.device.item.stop();
         this.deviceStart();
-        if (!sensor.enabled) delete this.measurements[sensorNameWithUnit(sensor)];
-        else this.measurements[sensorNameWithUnit(sensor)] = [];
+        if (!sensor.enabled) {
+          delete this.chartMeasurements[sensorNameWithUnit(sensor)];
+          delete this.readMeasurements[sensorNameWithUnit(sensor)];
+        }
+        else {
+          this.chartMeasurements[sensorNameWithUnit(sensor)] = [];
+          this.readMeasurements[sensorNameWithUnit(sensor)] = [];
+        }
       });
     });
   }
