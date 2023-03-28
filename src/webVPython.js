@@ -317,9 +317,7 @@ class VernierGDX extends EventTarget {
 
     const readMeasurements = this.devices
       .flatMap(deviceEl => deviceEl.readMeasurement());
-    if(this._priorMark) console.log(performance.measure('measure', 'priorMark').duration);
-    this._priorMark = performance.mark('priorMark');
-    return readMeasurements;
+    return readMeasurements.every(measurement => measurement === null) ? null : readMeasurements;
   }
 
   /**
@@ -487,8 +485,7 @@ class VernierDevice extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.chartMeasurements = {};
-    this.readMeasurements = {};
+    this.resetMeasurements();
   }
 
   get styles() {
@@ -533,8 +530,14 @@ class VernierDevice extends HTMLElement {
     });
   }
 
+  resetMeasurements() {
+    this.chartMeasurements = {};
+    this.readMeasurements = {};
+  }
+
   deviceStart() {
     if (!this.device.item.sensors) return;
+    this.resetMeasurements();
     const enabledSensors = this.device.item.sensors.filter(deviceSensor => deviceSensor.enabled);
     if (enabledSensors.length) {
       enabledSensors.forEach(sensor => {
