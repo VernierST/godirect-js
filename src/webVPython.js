@@ -76,7 +76,7 @@ class VernierGDX extends EventTarget {
       }
       return;
     }
-    this.actionButton.textContent = 'Collect';
+    this.actionButton.textContent = this._collectionButtonText;
     this.devices.forEach(deviceElement => deviceElement.stopRead());
     delete this.firstRead;
   }
@@ -276,6 +276,10 @@ class VernierGDX extends EventTarget {
     throw new Error('connection must be "ble" for bluetooth or "usb" for a wired connection');
   }
 
+  collectFor(milliseconds = -1) {
+    this._collectFor = milliseconds;
+  }
+
   /**
    *
    * @param {OpenOptions} [options] the options passed when calling open()
@@ -297,6 +301,13 @@ class VernierGDX extends EventTarget {
    */
   read() {
     if (!this.devices) return false;
+    if (this._collectFor > 0 && !this._reading) {
+      this._reading = true;
+      setTimeout(() => {
+        this._reading = false;
+        this.started = false;
+      }, this._collectFor);
+    }
 
     const chartMeasurements = this.devices
       .flatMap(deviceEl => Object.values(deviceEl.chartMeasurements))
@@ -363,6 +374,10 @@ class VernierGDX extends EventTarget {
     return this.period;
   }
 
+  get _collectionButtonText() {
+    return this._collectFor > 0 ? `Collect for ${this._collectFor}ms` : 'Collect';
+  }
+
   /**
    *
    * @param {VernierCanvasOptions} [options] additional components for controlling and visualizing the data
@@ -384,7 +399,7 @@ class VernierGDX extends EventTarget {
         this.actionButton.style.color = '#00aa00';
         this.actionButton.style.fontSize = '20px';
         this.actionButton.style.padding = '4px 8px';
-        this.actionButton.textContent = 'Collect';
+        this.actionButton.textContent = this._collectionButtonText;
         this.actionButton.addEventListener('click', this._toggleStarted.bind(this));
 
         this.exitButton = document.createElement('button');
