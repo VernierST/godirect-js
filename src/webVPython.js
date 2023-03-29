@@ -59,6 +59,7 @@ class VernierGDX extends EventTarget {
       this.actionButton.textContent = 'Stop';
       this.devices.forEach(deviceElement => deviceElement.deviceStart());
       this.collectionStartTime = new Date();
+      this._samplesCollected = 0;
       if (this._graph) {
         this._graph.xmin = 0;
         this._graph.xmax = 5;
@@ -101,6 +102,7 @@ class VernierGDX extends EventTarget {
       if (!element) return;
       element.period = this.period;
     });
+    this._setSamplesToCollect();
   }
 
   /** @type {number} seconds between collections */
@@ -222,6 +224,12 @@ class VernierGDX extends EventTarget {
     this._resetGraph();
   }
 
+  _setSamplesToCollect() {
+    if(!this._collectFor) return;
+    const seconds = this._collectFor / 1000;
+    this._samplesToCollect = Math.floor(this.samplesPerSecond / seconds);
+  }
+
   /**
    * sets up the vernier sections for placing vernier elements
    */
@@ -278,6 +286,8 @@ class VernierGDX extends EventTarget {
 
   collectFor(milliseconds = -1) {
     this._collectFor = milliseconds;
+    if(!this.period) return;
+    this._setSamplesToCollect();
   }
 
   /**
@@ -301,17 +311,15 @@ class VernierGDX extends EventTarget {
    */
   read() {
     if (!this.devices) return false;
-    if (this._collectFor > 0 && !this._reading) {
-      this._reading = true;
-      setTimeout(() => {
-        this._reading = false;
+    if (this._samplesCollected > this._samplesToCollect) {
         this.started = false;
-      }, this._collectFor);
+        return null;
     }
 
     const chartMeasurements = this.devices
       .flatMap(deviceEl => Object.values(deviceEl.chartMeasurements))
-      .filter(measurement => ![null, undefined].includes(measurement));
+      .filter(measurement => ![null, undefined].includes(measurement))
+      .map(measurement => measurement.slice(0, this._samplesToCollect+1));
 
     this.dispatchEvent(
       new CustomEvent('data-read', {
@@ -328,7 +336,9 @@ class VernierGDX extends EventTarget {
 
     const readMeasurements = this.devices
       .flatMap(deviceEl => deviceEl.readMeasurement());
-    return readMeasurements.every(measurement => measurement === null) ? null : readMeasurements;
+    const final = readMeasurements.every(measurement => measurement === null) ? null : readMeasurements;
+    if(final) this._samplesCollected++;
+    return final
   }
 
   /**
@@ -482,7 +492,8 @@ class VernierGDX extends EventTarget {
       this._curveIndecies = this._curves.map(() => [0]);
       this.addEventListener('data-read', ({ detail: { measurements } }) => {
         this._curves.forEach((curve, curveIndex) => {
-          while (this._curveIndecies[curveIndex] + 1 < measurements[curveIndex].length) {
+          if(!measurements[curveIndex]) return;
+          while (this._curveIndecies[curveIndex] < measurements[curveIndex].length) {
             const measurement = measurements[curveIndex][this._curveIndecies[curveIndex]];
             curve.plot(...measurement);
             this._curveIndecies[curveIndex]++;
@@ -532,6 +543,7 @@ class VernierDevice extends HTMLElement {
 
   set period(value) {
     this._period = Number(value) || 100;
+    this.dispatchEvent(new Event('period-set'));
     this.device.item.stop?.();
     this.deviceStart();
   }
@@ -582,7 +594,7 @@ class VernierDevice extends HTMLElement {
   }
 
   readMeasurement() {
-    return Object.values(this.readMeasurements).map(deviceReadings => deviceReadings.shift() ?? null);
+    return Object.values(this.readMeasurements).map((deviceReadings=[]) => deviceReadings.shift() ?? null);
   }
 
   setupSensors() {
