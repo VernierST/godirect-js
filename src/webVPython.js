@@ -230,7 +230,7 @@ class VernierGDX extends EventTarget {
    */
   _setSamplesToCollect() {
     if(!this._collectFor) return;
-    this._samplesToCollect = Math.floor(this.samplesPerSecond / this._collectFor);
+    this._samplesToCollect = Math.floor(this.samplesPerSecond * this._collectFor);
   }
 
   /**
