@@ -224,6 +224,10 @@ class VernierGDX extends EventTarget {
     this._resetGraph();
   }
 
+  /**
+   * a function to set the number of samples to collect based on the period and samplesPerSecond
+   * @returns {null}
+   */
   _setSamplesToCollect() {
     if(!this._collectFor) return;
     this._samplesToCollect = Math.floor(this.samplesPerSecond / this._collectFor);
@@ -283,6 +287,11 @@ class VernierGDX extends EventTarget {
     throw new Error('connection must be "ble" for bluetooth or "usb" for a wired connection');
   }
 
+  /**
+   * an optional function to set how long the data collection should last
+   * @param {number} seconds the length of time in seconds to collect data for
+   * @returns {null}
+   */
   collectFor(seconds = -1) {
     this._collectFor = seconds;
     if(!this.period) return;
