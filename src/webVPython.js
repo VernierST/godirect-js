@@ -226,8 +226,7 @@ class VernierGDX extends EventTarget {
 
   _setSamplesToCollect() {
     if(!this._collectFor) return;
-    const seconds = this._collectFor / 1000;
-    this._samplesToCollect = Math.floor(this.samplesPerSecond / seconds);
+    this._samplesToCollect = Math.floor(this.samplesPerSecond / this._collectFor);
   }
 
   /**
@@ -284,8 +283,8 @@ class VernierGDX extends EventTarget {
     throw new Error('connection must be "ble" for bluetooth or "usb" for a wired connection');
   }
 
-  collectFor(milliseconds = -1) {
-    this._collectFor = milliseconds;
+  collectFor(seconds = -1) {
+    this._collectFor = seconds;
     if(!this.period) return;
     this._setSamplesToCollect();
   }
@@ -385,7 +384,7 @@ class VernierGDX extends EventTarget {
   }
 
   get _collectionButtonText() {
-    return this._collectFor > 0 ? `Collect for ${this._collectFor}ms` : 'Collect';
+    return this._collectFor > 0 ? `Collect for ${this._collectFor}s` : 'Collect';
   }
 
   /**
