@@ -9,7 +9,8 @@
   "exports": {
     "require": "./dist/godirect.min.cjs.js",
     "import": "./dist/godirect.min.esm.js",
-    "default": "./dist/godirect.min.esm.js"
+    "default": "./dist/godirect.min.esm.js",
+    "types": "./types/godirect.d.ts"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.15.0",
