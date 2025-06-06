@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { log } from './utils.js';
 
 const SERVICE = 'd91714ef-28b9-4f91-ba16-f0d9a604f112';
@@ -52,6 +53,38 @@ export default class WebBluetoothDeviceAdapter {
       });
     } catch (err) {
       console.error(err);
+    }
+
+    // Some platforms (Android) require us to tickle the command char to ensure it is ready
+    const _primeCommandChar = async () => {
+      const ch = this.deviceCommand;
+      if (!ch)
+        return false;
+      const buffer = new Uint8Array([]);
+      for (let count = 1; count <= 25; count++) {
+        try {
+          await ch.writeValueWithoutResponse(buffer);
+          return true;
+        } catch (e) {
+          console.debug('_primeCommandChar: writeValueWithoutResponse FAILED');
+          try {
+            await ch.writeValueWithResponse(buffer);
+            return true;
+          } catch (e2) {
+            console.debug('_primeCommandChar: writeValueWithResponse FAILED');
+          }
+        } finally {
+          console.debug('_primeCommandChar empty command attempted %d times for device:', count);
+        }
+      }
+      return false;
+    };
+
+
+    if (!await _primeCommandChar()) {
+      console.error('_primeCommandChar FAILED for device:');
+      console.dir(this);
+      this.deviceCommand = undefined;
     }
 
     if (!(this.deviceCommand && this.deviceResponse)) {

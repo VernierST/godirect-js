@@ -536,7 +536,7 @@ class VernierDevice extends HTMLElement {
   }
 
   get styles() {
-    return /*html*/ `
+    return /* html */ `
       <style>
         fieldset {
           display:flex;
@@ -660,7 +660,7 @@ class VernierDevice extends HTMLElement {
   }
 
   render() {
-    this.shadowRoot.innerHTML = /*html*/ `
+    this.shadowRoot.innerHTML = /* html */ `
       ${this.styles}
       <fieldset id='sensor'>
         <legend>${this.device.item.name}</legend>
@@ -668,7 +668,7 @@ class VernierDevice extends HTMLElement {
           <legend>Channels</legend>
           ${(this.device.item.sensors || [])
             .map(
-              sensor => /*html*/ `<div data-sensor-channel="${sensorNameWithUnit(
+              sensor => /* html */ `<div data-sensor-channel="${sensorNameWithUnit(
                 sensor,
               )}"><label><input ${sensor.enabled ? 'checked' : ''} type='checkbox'
                 data-number="${sensor.number}">${sensorNameWithUnit(
