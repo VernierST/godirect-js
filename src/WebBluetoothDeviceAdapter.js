@@ -57,18 +57,18 @@ export default class WebBluetoothDeviceAdapter {
 
     // Some platforms (Android) require us to tickle the command char to ensure it is ready
     const _primeCommandChar = async () => {
-      const ch = this.deviceCommand;
-      if (!ch)
+      const commandChar = this.deviceCommand;
+      if (!commandChar)
         return false;
       const buffer = new Uint8Array([]);
       for (let count = 1; count <= 25; count++) {
         try {
-          await ch.writeValueWithoutResponse(buffer);
+          await commandChar.writeValueWithoutResponse(buffer);
           return true;
         } catch (e) {
           console.debug('_primeCommandChar: writeValueWithoutResponse FAILED');
           try {
-            await ch.writeValueWithResponse(buffer);
+            await commandChar.writeValueWithResponse(buffer);
             return true;
           } catch (e2) {
             console.debug('_primeCommandChar: writeValueWithResponse FAILED');
